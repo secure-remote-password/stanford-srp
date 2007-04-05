@@ -1,0 +1,289 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if system calls automatically restart after interruption
+   by a signal.  */
+#undef HAVE_RESTARTABLE_SYSCALLS
+
+/* Define if you have <vfork.h>.  */
+#undef HAVE_VFORK_H
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if the `setpgrp' function takes no argument.  */
+#undef SETPGRP_VOID
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define vfork as fork if vfork does not work.  */
+#undef vfork
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
+#undef TERMCAP
+
+#undef UTMPX
+
+#undef HAVE_UTMP_UT_TV
+
+#undef HAVE_UTMPX_UT_TV
+
+#undef UT_USER
+
+#undef HAS_GETTOS
+
+#undef INET6
+
+#undef GNU_MP
+
+#undef GCRYPT
+
+#undef MPI
+
+#undef TOMCRYPT
+
+#undef TOMMATH
+
+#undef CRYPTOLIB
+
+#undef OPENSSL
+
+#undef AUTHENTICATION
+
+#undef HAVE_SRP
+
+#undef KRB4
+
+#undef KRB4C
+
+#undef KRB5
+
+#undef FORWARD
+
+#undef SPX
+
+#undef RSA_ENCPWD
+
+#undef KRB4_ENCPWD
+
+#undef CAST_ENCRYPTION
+
+#undef OPENSSL_CAST
+
+#undef TOMCRYPT_CAST
+
+#undef DES_ENCRYPTION
+
+#undef OPENSSL_DES
+
+#undef CRYPTOLIB_DES
+
+#undef DESLIB4
+
+#undef DESLIB3
+
+#undef ENCRYPTION
+
+#undef NO_RSA
+
+#undef TLS
+
+#undef TLS_KRB5
+
+#undef TLS_SESSION_FILE_CACHE
+
+#undef ZLIB
+
+#undef FWDX_XDM
+
+#undef FWDX_LOOPBACK
+
+#undef FWDX_UNIX_SOCK
+
+#undef FWD_X
+
+#undef ENV_HACK
+
+#undef OLD_ENVIRON
+
+#undef KLUDGELINEMODE
+
+#undef DIAGNOSTICS
+
+#undef TJW
+
+#undef DEFAULT_IM
+
+#undef signal
+
+#undef SOLARIS
+
+#undef IRIX
+
+#undef LINUX
+
+#undef OSF
+
+#undef SCO
+
+#undef LINEMODE
+
+#undef SYSV_TERMIO
+
+#undef NEWINIT
+
+#undef HAVE_fd_set
+
+#undef STREAMSPTY
+
+#undef NO_LOGIN_F
+
+#undef NO_LOGIN_H
+
+#undef LOGIN_R
+
+#undef NO_LOGIN_P
+
+#undef LOGIN_ARGS
+
+/* Define if you have the getent function.  */
+#undef HAVE_GETENT
+
+/* Define if you have the getopt function.  */
+#undef HAVE_GETOPT
+
+/* Define if you have the grantpt function.  */
+#undef HAVE_GRANTPT
+
+/* Define if you have the herror function.  */
+#undef HAVE_HERROR
+
+/* Define if you have the makeutx function.  */
+#undef HAVE_MAKEUTX
+
+/* Define if you have the mktime function.  */
+#undef HAVE_MKTIME
+
+/* Define if you have the modutx function.  */
+#undef HAVE_MODUTX
+
+/* Define if you have the parsetos function.  */
+#undef HAVE_PARSETOS
+
+/* Define if you have the ptsname function.  */
+#undef HAVE_PTSNAME
+
+/* Define if you have the setenv function.  */
+#undef HAVE_SETENV
+
+/* Define if you have the strcasecmp function.  */
+#undef HAVE_STRCASECMP
+
+/* Define if you have the strchr function.  */
+#undef HAVE_STRCHR
+
+/* Define if you have the strdup function.  */
+#undef HAVE_STRDUP
+
+/* Define if you have the strerror function.  */
+#undef HAVE_STRERROR
+
+/* Define if you have the strftime function.  */
+#undef HAVE_STRFTIME
+
+/* Define if you have the strrchr function.  */
+#undef HAVE_STRRCHR
+
+/* Define if you have the unlockpt function.  */
+#undef HAVE_UNLOCKPT
+
+/* Define if you have the updwtmpx function.  */
+#undef HAVE_UPDWTMPX
+
+/* Define if you have the vhangup function.  */
+#undef HAVE_VHANGUP
+
+/* Define if you have the <bsdsetjmp.h> header file.  */
+#undef HAVE_BSDSETJMP_H
+
+/* Define if you have the <errno.h> header file.  */
+#undef HAVE_ERRNO_H
+
+/* Define if you have the <getopt.h> header file.  */
+#undef HAVE_GETOPT_H
+
+/* Define if you have the <netinet/in_systm.h> header file.  */
+#undef HAVE_NETINET_IN_SYSTM_H
+
+/* Define if you have the <netinet/ip.h> header file.  */
+#undef HAVE_NETINET_IP_H
+
+/* Define if you have the <sac.h> header file.  */
+#undef HAVE_SAC_H
+
+/* Define if you have the <stdarg.h> header file.  */
+#undef HAVE_STDARG_H
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define if you have the <sys/filio.h> header file.  */
+#undef HAVE_SYS_FILIO_H
+
+/* Define if you have the <sys/ptyvar.h> header file.  */
+#undef HAVE_SYS_PTYVAR_H
+
+/* Define if you have the <sys/spt.h> header file.  */
+#undef HAVE_SYS_SPT_H
+
+/* Define if you have the <sys/stream.h> header file.  */
+#undef HAVE_SYS_STREAM_H
+
+/* Define if you have the <sys/time.h> header file.  */
+#undef HAVE_SYS_TIME_H
+
+/* Define if you have the <sys/tty.h> header file.  */
+#undef HAVE_SYS_TTY_H
+
+/* Define if you have the <sys/types.h> header file.  */
+#undef HAVE_SYS_TYPES_H
+
+/* Define if you have the <sys/un.h> header file.  */
+#undef HAVE_SYS_UN_H
+
+/* Define if you have the <termio.h> header file.  */
+#undef HAVE_TERMIO_H
+
+/* Define if you have the <termios.h> header file.  */
+#undef HAVE_TERMIOS_H
+
+/* Define if you have the dl library (-ldl).  */
+#undef HAVE_LIBDL
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the resolv library (-lresolv).  */
+#undef HAVE_LIBRESOLV
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* Define if you have the util library (-lutil).  */
+#undef HAVE_LIBUTIL
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+

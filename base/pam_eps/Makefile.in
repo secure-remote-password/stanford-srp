@@ -1,0 +1,116 @@
+#
+# Makefile for EPS PAM modules (auth, passwd)
+#
+
+########################################################################
+# some options... uncomment to take effect
+########################################################################
+
+# do you want to use lckpwdf?
+USE_LCKPWDF=-DUSE_LCKPWDF
+
+# do you need to include the one in this source?
+#NEED_LCKPWDF=-DNEED_LCKPWDF
+
+LIBS = -L../../libsrp -lsrp @LIBMATH@ @LIBS@
+
+CC = @CC@
+DYNAMIC = @PICFLAG@
+CCSHARED = @SHAREDFLAG@
+
+########################################################################
+
+CHKPWD = eps_chkpwd
+FAKEROOT = @prefix@
+SUPPLEMENTED = /sbin
+SECUREDIR = /lib/security
+EXTRAS = -DCHKPWD_HELPER=\"$(SUPPLEMENTED)/$(CHKPWD)\"
+
+CPPFLAGS = @CPPFLAGS@ -I../../libsrp $(USE_LCKPWDF) $(NEED_LCKPWDF) $(EXTRAS)
+CFLAGS = @CFLAGS@
+
+DISTFILES = Makefile.in Makefile.unix README README.pam-eps README.rpm \
+  SOURCES SPECS pam.conf.eps pam.conf.migrate \
+  support.c eps_chkpwd.c $(LIBPASSWDSRC) $(LIBAUTHSRC)
+
+LIBAUTHSH = pam_eps_auth.so
+LIBPASSWDSH = pam_eps_passwd.so
+
+LIBAUTHOBJ = pam_eps_auth.o support.o
+LIBAUTHSRC = pam_eps_auth.c support.c
+LIBPASSWDSRC = pam_eps_passwd.c
+LIBPASSWDOBJ = pam_eps_passwd.o
+LIBOBJ = $(LIBAUTHOBJ) $(LIBPASSWDOBJ)
+LIBSRC = $(LIBAUTHSRC) $(LIBPASSWDSRC)
+
+LIBSHARED = $(LIBAUTHSH) $(LIBPASSWDSH)
+
+# Some make commands choke on this...
+#LIBOBJD = $(addprefix dynamic/,$(LIBOBJ))
+#LIBOBJS = $(addprefix static/,$(LIBOBJ))
+LIBAUTHOBJD = dynamic/support.o dynamic/pam_eps_auth.o
+LIBPASSWDOBJD = dynamic/pam_eps_passwd.o
+LIBOBJD = $(LIBAUTHOBJD) $(LIBPASSWDOBJD)
+
+# Some make commands choke on this...
+#dynamic/%.o : %.c
+#	$(CC) $(CFLAGS) $(DYNAMIC) $(CPPFLAGS) -c $< -o $@
+#
+#static/%.o: %.c
+#	$(CC) $(CFLAGS) $(STATIC) $(CPPFLAGS) -c $< -o $@
+
+# Use configured install program
+INSTALL = @INSTALL@
+
+########################### don't edit below #######################
+
+all: dirs @PAM_TARGETS@
+
+dirs:
+	-mkdir -p ./dynamic
+
+dynamic/pam_eps_auth.o: pam_eps_auth.c
+	$(CC) $(CFLAGS) $(DYNAMIC) $(CPPFLAGS) -c pam_eps_auth.c -o $@
+
+dynamic/pam_eps_passwd.o: pam_eps_passwd.c
+	$(CC) $(CFLAGS) $(DYNAMIC) $(CPPFLAGS) -c pam_eps_passwd.c -o $@
+
+dynamic/support.o: support.c
+	$(CC) $(CFLAGS) $(DYNAMIC) $(CPPFLAGS) -c support.c -o $@
+
+$(LIBOBJD): $(LIBSRC)
+
+$(LIBAUTHSH):	$(LIBAUTHSRC) $(LIBOBJD)
+		$(CC) $(CCSHARED) -o $@ $(LIBAUTHOBJD) $(LIBS)
+
+$(LIBPASSWDSH):	$(LIBPASSWDSRC) $(LIBOBJD)
+		$(CC) $(CCSHARED) -o $@ $(LIBPASSWDOBJD) $(LIBS)
+
+$(CHKPWD):	eps_chkpwd.c
+		$(CC) -o $@ eps_chkpwd.c $(STATIC) $(LIBS)
+
+install: all
+	mkdir -p $(FAKEROOT)$(SECUREDIR)
+	$(INSTALL) -m 644 $(LIBSHARED) $(FAKEROOT)$(SECUREDIR)
+	$(INSTALL) $(CHKPWD) $(FAKEROOT)$(SUPPLEMENTED)
+
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+top_builddir = ..
+subdir = pam_eps
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+distdir: $(DISTFILES)
+	cp -pr $(DISTFILES) $(distdir)
+
+remove:
+	cd $(FAKEROOT)$(SECUREDIR) && rm -f $(LIBSHARED)
+
+clean:
+	rm -f $(LIBAUTHSH) $(LIBPASSWDSH) $(LIBOBJD) $(LIBOBJS) a.out core $(CHKPWD) *~
+
+extraclean: clean
+	rm -f *.a *.out *.o *.so *.bak $(CHKPWD)
+
+.c.o:	
+	$(CC) -c $(CFLAGS) $<

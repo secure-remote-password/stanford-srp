@@ -1,0 +1,9 @@
+all:
+	cd libtelnet; make -f Makefile.unix CC="${CC}"
+	cd telnet; make -f Makefile.unix CC="${CC}"
+	cd telnetd; make -f Makefile.unix CC="${CC}"
+
+.DEFAULT:
+	cd libtelnet; make -f Makefile.unix $@ WHAT=${WHAT} CC="${CC}"
+	cd telnet; make -f Makefile.unix $@ WHAT=${WHAT} CC="${CC}"
+	cd telnetd; make -f Makefile.unix $@ WHAT=${WHAT} CC="${CC}"

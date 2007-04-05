@@ -1,0 +1,90 @@
+#
+# Makefile for EPS PAM modules (auth, passwd)
+#
+
+########################################################################
+# some options... uncomment to take effect
+########################################################################
+
+# do you want to use lckpwdf?
+USE_LCKPWDF=-D"USE_LCKPWDF"
+
+# do you need to include the one in this source?
+#NEED_LCKPWDF=-D"NEED_LCKPWDF"
+
+# Where the SRP and support libraries live
+# GMP version
+#SRPLIB=-L../../libsrp -lsrp -L../../libmp -lgmp
+# OpenSSL version
+SRPLIB=-L../../libsrp -lsrp -L../../openssl -lcrypto
+
+# Linux-PAM
+CC = gcc
+CCSHARED = --shared -fPIC
+# Solaris2.6-PAM
+#CCSHARED = -G
+
+########################################################################
+
+CHKPWD = eps_chkpwd
+SUPLEMENTED = /sbin
+EXTRAS = -DCHKPWD_HELPER=\"$(SUPLEMENTED)/$(CHKPWD)\"
+
+CFLAGS += -O9 $(USE_LCKPWDF) $(NEED_LCKPWDF) $(EXTRAS) -I../../include
+
+LIBAUTHSH = pam_eps_auth.so
+LIBPASSWDSH = pam_eps_passwd.so
+
+LIBAUTHOBJ = pam_eps_auth.o support.o
+LIBAUTHSRC = pam_eps_auth.c support.c
+LIBPASSWDSRC = pam_eps_passwd.c
+LIBPASSWDOBJ = pam_eps_passwd.o
+LIBOBJ = $(LIBAUTHOBJ) $(LIBPASSWDOBJ)
+LIBSRC = $(LIBAUTHSRC) $(LIBPASSWDSRC)
+
+LIBSHARED = $(LIBAUTHSH) $(LIBPASSWDSH)
+
+LIBOBJD = $(addprefix dynamic/,$(LIBOBJ))
+LIBOBJS = $(addprefix static/,$(LIBOBJ))
+
+dynamic/%.o : %.c
+	$(CC) $(CFLAGS) $(DYNAMIC) $(CPPFLAGS) -c $< -o $@
+
+static/%.o: %.c
+	$(CC) $(CFLAGS) $(STATIC) $(CPPFLAGS) -c $< -o $@
+
+
+########################### don't edit below #######################
+
+all: dirs $(LIBSHARED) $(LIBSTATIC) $(CHKPWD)
+
+dirs:
+	mkdir -p ./dynamic
+
+$(LIBOBJD): $(LIBSRC)
+
+$(LIBAUTHSH):	$(LIBAUTHSRC) $(LIBOBJD)
+		$(CC) $(CCSHARED) -o $@ $(addprefix dynamic/,$(LIBAUTHOBJ)) $(SRPLIB)
+
+$(LIBPASSWDSH):	$(LIBPASSWDSRC) $(LIBOBJD)
+		$(CC) $(CCSHARED) -o $@ $(addprefix dynamic/,$(LIBPASSWDOBJ)) $(SRPLIB)
+
+$(CHKPWD):	eps_chkpwd.c $(LIBOBJD)
+		$(CC) -o $@ $< $(STATIC) $(SRPLIB)
+
+install: all
+	mkdir -p $(FAKEROOT)$(SECUREDIR)
+	install -m644 $(LIBSHARED) $(FAKEROOT)$(SECUREDIR)
+	install $(CHKPWD) $(FAKEROOT)$(SUPLEMENTED)
+
+remove:
+	cd $(FAKEROOT)$(SECUREDIR) && rm -f $(LIBSHARED)
+
+clean:
+	rm -f $(LIBAUTHSH) $(LIBPASSWDSH) $(LIBOBJD) $(LIBOBJS) a.out core $(CHKPWD) *~
+
+extraclean: clean
+	rm -f *.a *.out *.o *.so *.bak $(CHKPWD)
+
+.c.o:	
+	$(CC) -c $(CFLAGS) $<

@@ -1,0 +1,415 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(lib/dialchk.c)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(shadow, 001101)
+
+dnl Some hacks...
+dnl test "$prefix" = "NONE" && prefix="/usr"
+dnl test "$prefix" = "/usr" && exec_prefix=""
+test "$CFLAGS" = "" && CFLAGS="-O"
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_ARG_PROGRAM
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(fcntl.h limits.h stdlib.h unistd.h sys/time.h utmp.h utmpx.h)
+AC_CHECK_HEADERS(termios.h termio.h sgtty.h sys/ioctl.h syslog.h)
+AC_CHECK_HEADERS(paths.h usersec.h utime.h ulimit.h sys/resource.h)
+AC_CHECK_HEADERS(gshadow.h shadow.h lastlog.h)
+AC_CHECK_HEADERS(sys/label.h sys/select.h)
+
+dnl AC_EGREP_HEADER(ut_host, utmp.h, AC_DEFINE(UT_HOST))
+AC_TRY_COMPILE([
+#include <time.h>
+#include <utmp.h>
+], [
+struct utmp u;
+u.ut_host;], AC_DEFINE(UT_HOST))
+dnl AC_EGREP_HEADER(ut_name, utmp.h, AC_DEFINE(UT_USER, ut_name))
+AC_TRY_COMPILE([
+#include <time.h>
+#ifdef HAVE_UTMPX_H
+#include <utmpx.h>
+#else
+#include <utmp.h>
+#endif
+], [
+#ifdef HAVE_UTMPX_H
+struct utmpx u;
+#else
+struct utmp u;
+#endif
+u.ut_user;], AC_DEFINE(UT_USER, ut_user), AC_DEFINE(UT_USER, ut_name))
+AC_TRY_COMPILE([
+#include <time.h>
+#ifdef HAVE_UTMPX_H
+#include <utmpx.h>
+#else
+#include <utmp.h>
+#endif
+], [
+#ifdef HAVE_UTMPX_H
+struct utmpx u;
+#else
+struct utmp u;
+#endif
+u.ut_syslen;], AC_DEFINE(HAVE_UT_SYSLEN, ut_syslen))
+AC_TRY_COMPILE([
+#include <time.h>
+#include <utmp.h>
+], [struct lastlog ll;], AC_DEFINE(UTMP_LASTLOG))
+AC_EGREP_HEADER(ll_host, lastlog.h, AC_DEFINE(HAVE_LL_HOST))
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_UID_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_STRUCT_ST_RDEV
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl Checks for library functions.
+AC_TYPE_GETGROUPS
+AC_PROG_GCC_TRADITIONAL
+AC_TYPE_SIGNAL
+AC_FUNC_UTIME_NULL
+AC_FUNC_STRFTIME
+dnl Disabled for now, strtoday.c has problems with year 2000 or later
+dnl AC_CHECK_FUNCS(strptime)
+AC_CHECK_FUNCS(a64l fchmod fchown fsync getgroups gethostname)
+AC_CHECK_FUNCS(getspnam gettimeofday getusershell getutent initgroups)
+AC_CHECK_FUNCS(setgroups sigaction)
+dnl This is broken on several OSes
+dnl AC_CHECK_FUNCS(lckpwdf)
+
+AC_REPLACE_FUNCS(mkdir putgrent putpwent putspent rename rmdir)
+AC_REPLACE_FUNCS(sgetgrent sgetpwent sgetspent strdup strstr)
+
+AC_CACHE_CHECK(for pw_age in struct passwd,
+ac_cv_struct_passwd_pw_age, AC_TRY_COMPILE([#include <pwd.h>],
+[ struct passwd pw;  pw.pw_age = "" ],
+ac_cv_struct_passwd_pw_age=yes, ac_cv_struct_passwd_pw_age=no))
+
+if test "$ac_cv_struct_passwd_pw_age" = "yes"; then
+	AC_DEFINE(ATT_AGE)
+fi
+
+AC_CACHE_CHECK(for pw_comment in struct passwd,
+ac_cv_struct_passwd_pw_comment, AC_TRY_COMPILE([#include <pwd.h>],
+[ struct passwd pw;  pw.pw_comment = "" ],
+ac_cv_struct_passwd_pw_comment=yes, ac_cv_struct_passwd_pw_comment=no))
+
+if test "$ac_cv_struct_passwd_pw_comment" = "yes"; then
+	AC_DEFINE(ATT_COMMENT)
+fi
+
+AC_CACHE_CHECK(for pw_quota in struct passwd,
+ac_cv_struct_passwd_pw_quota, AC_TRY_COMPILE([#include <pwd.h>],
+[ struct passwd pw;  pw.pw_quota = "" ],
+ac_cv_struct_passwd_pw_quota=yes, ac_cv_struct_passwd_pw_quota=no))
+
+if test "$ac_cv_struct_passwd_pw_quota" = "yes"; then
+	AC_DEFINE(BSD_QUOTA)
+fi
+
+if test "$ac_cv_header_shadow_h" = "yes"; then
+AC_CACHE_CHECK(for extra fields in struct spwd,
+ac_cv_struct_shadow_sp_extra, AC_TRY_COMPILE([#include <shadow.h>],
+[ struct spwd sp; sp.sp_warn = 0; sp.sp_inact = 0; sp.sp_expire; sp.sp_flag = 0; ],
+ac_cv_struct_shadow_sp_extra=yes, ac_cv_struct_shadow_sp_extra=no))
+
+if test "$ac_cv_struct_shadow_sp_extra" = "yes"; then
+	AC_DEFINE(SP_EXTRA)
+fi
+
+AC_CACHE_CHECK(for working shadow group support,
+ac_cv_libc_shadowgrp, AC_TRY_RUN(
+[
+#include <shadow.h>
+main()
+{
+	struct sgrp *sg = sgetsgent("test:x::");
+	/* NYS libc on Red Hat 3.0.3 has broken shadow group support */
+	return !sg || !sg->sg_adm || !sg->sg_mem;
+}
+],
+ac_cv_libc_shadowgrp=yes,ac_cv_libc_shadowgrp=no,ac_cv_libc_shadowgrp=no))
+
+if test "$ac_cv_libc_shadowgrp" = "yes"; then
+	AC_DEFINE(HAVE_SHADOWGRP)
+fi
+fi
+
+AC_MSG_CHECKING(location of shared mail directory)
+for maildir in /var/spool/mail /var/mail /usr/spool/mail /usr/mail NONE; do
+	if test "$maildir" = "NONE"; then
+		AC_MSG_RESULT(None)
+	elif test -d $maildir; then
+		AC_DEFINE_UNQUOTED(MAIL_SPOOL_DIR, "$maildir")
+		AC_MSG_RESULT($maildir)
+		break
+	fi
+done
+
+AC_MSG_CHECKING(location of user mail file)
+for mailfile in Mailbox mailbox Mail mail .mail NONE; do
+	if test "$mailfile" = "NONE"; then
+		AC_MSG_RESULT(None)
+	elif test -f $HOME/$mailfile; then
+		AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, "$mailfile")
+		AC_MSG_RESULT($mailfile)
+		break
+	fi
+done
+
+AC_MSG_CHECKING(location of utmp)
+for utmpdir in /var/run /var/adm /usr/adm /etc NONE; do
+	if test "$utmpdir" = "NONE"; then
+		AC_MSG_WARN(utmp file not found)
+	elif test -f $utmpdir/utmp; then
+		AC_DEFINE_UNQUOTED(_UTMP_FILE, "$utmpdir/utmp")
+		AC_MSG_RESULT($utmpdir)
+		break
+	fi
+done
+
+AC_MSG_CHECKING(location of wtmp)
+for wtmpdir in /var/log /var/adm /usr/adm /etc NONE; do
+	if test "$wtmpdir" = "NONE"; then
+		AC_MSG_WARN(wtmp file not found)
+	elif test -f $wtmpdir/wtmp; then
+		AC_DEFINE_UNQUOTED(_WTMP_FILE, "$wtmpdir/wtmp")
+		AC_MSG_RESULT($wtmpdir)
+		break
+	fi
+done
+
+AC_MSG_CHECKING(location of faillog)
+for faillogdir in /var/log /var/adm /usr/adm /etc NONE; do
+	if test "$faillogdir" = "NONE"; then
+		AC_MSG_WARN(faillog file not found)
+	elif test -f $faillogdir/faillog; then
+		AC_DEFINE_UNQUOTED(FAILLOG_FILE, "$faillogdir/faillog")
+		AC_MSG_RESULT($faillogdir)
+		break
+	fi
+done
+		
+AC_MSG_CHECKING(location of lastlog)
+for lastlogdir in /var/log /var/adm /usr/adm /etc NONE; do
+	if test "$lastlogdir" = "NONE"; then
+		AC_MSG_WARN(lastlog file not found)
+	elif test -f $lastlogdir/lastlog; then
+		AC_DEFINE_UNQUOTED(LASTLOG_FILE, "$lastlogdir/lastlog")
+		AC_MSG_RESULT($lastlogdir)
+		break
+	fi
+done
+		
+AC_MSG_CHECKING(location of sulog)
+for sulogdir in /var/log /var/adm /usr/adm /etc NONE; do
+	if test "$sulogdir" = "NONE"; then
+		AC_MSG_WARN(sulog file not found)
+	elif test -f $sulogdir/sulog; then
+		AC_DEFINE_UNQUOTED(SULOG_FILE, "$sulogdir/sulog")
+		AC_MSG_RESULT($sulogdir)
+		break
+	fi
+done
+		
+AC_MSG_CHECKING(location of passwd/chfn/chsh programs)
+if test -f /usr/bin/passwd; then
+	passwd_dir=/usr/bin
+else
+	passwd_dir=/bin
+fi
+AC_DEFINE_UNQUOTED(CHFN_PROGRAM, "$passwd_dir/chfn")
+AC_DEFINE_UNQUOTED(CHSH_PROGRAM, "$passwd_dir/chsh")
+AC_DEFINE_UNQUOTED(GPASSWD_PROGRAM, "$passwd_dir/gpasswd")
+AC_DEFINE_UNQUOTED(PASSWD_PROGRAM, "$passwd_dir/passwd")
+AC_MSG_RESULT($passwd_dir)
+
+dnl XXX - quick hack, should disappear before anyone notices :).
+AC_DEFINE(SHADOWPWD)
+AC_DEFINE(USG)
+AC_DEFINE(AGING)
+AC_DEFINE(USE_SYSLOG)
+AC_DEFINE(RLOGIN)
+AC_DEFINE(RUSEROK,0)
+AC_DEFINE(LOGIN_ACCESS)
+AC_DEFINE(SU_ACCESS)
+AC_DEFINE(CONSOLE_GROUPS)
+AC_DEFINE_UNQUOTED(DEFAULT_CRACKLIB_DICTPATH, "/lib:/usr/local/lib:/usr/lib:/usr/share/lib:/usr/local/share/lib")
+
+AC_CHECK_LIB(inet, inet_network)
+AC_CHECK_LIB(socket, socket)
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(dl, dlopen, LIBDL=" -ldl")
+
+AC_ARG_ENABLE(shadowgrp, [  --enable-shadowgrp      enable shadow group support], AC_DEFINE(SHADOWGRP))
+AC_ARG_ENABLE(noisyshell, [  --enable-noisyshell	your shell prints motd, mail message], AC_DEFINE(NOISY_SHELL))
+
+AC_ARG_WITH(libcrypt, [  --with-libcrypt         try to use libcrypt (default if found)])
+AC_ARG_WITH(libcrack, [  --with-libcrack         try to use libcrack (default if found)])
+AC_ARG_WITH(md5crypt, [  --with-md5crypt         include code to generate md5 passwords])
+AC_ARG_WITH(openssl, [  --with-openssl=DIR		compile to use OpenSSL ], OPENSSLDIR=$withval)
+AC_ARG_WITH(cryptolib, [  --with-cryptolib=DIR		compile to use cryptolib ], CRYPTOLIBDIR=$withval, with_cryptolib=no)
+AC_ARG_WITH(gmp, [  --with-gmp=DIR		compile to use GNU MP ], GMPDIR=$withval, with_gmp=no)
+AC_ARG_WITH(gcrypt, [  --with-gcrypt=DIR	compile to use libgcrypt ], GCRYPTDIR=$withval, with_gcrypt=no)
+AC_ARG_WITH(mpi, [  --with-mpi=DIR		compile to use MPI ], MPIDIR=$withval, with_mpi=no)
+AC_ARG_WITH(tomcrypt, [  --with-tomcrypt=DIR	compile to use libtomcrypt ], TOMCRYPTDIR=$withval, with_tomcrypt=no)
+AC_ARG_WITH(tommath, [  --with-tommath=DIR	compile to use libtommath ], TOMMATHDIR=$withval, with_tommath=no)
+AC_ARG_WITH(libskey, [  --with-libskey          use libskey for S/Key support])
+AC_ARG_WITH(libopie, [  --with-libopie          use libopie for OPIE support])
+AC_ARG_WITH(pam, [  --with-pam              build with PAM support])
+
+AC_SUBST(LIBCRYPT)
+AC_SUBST(CRYPTOBJS)
+if test "$with_libcrypt" = "no"
+then
+	:
+else
+	AC_CHECK_LIB(crypt, crypt, AC_DEFINE(HAVE_LIBCRYPT) LIBCRYPT=-lcrypt CRYPTOBJS= )
+fi
+
+AC_SUBST(LIBCRACK)
+if test "$with_libcrack" = "no"
+then
+	:
+else
+	echo "checking cracklib flavour, don't be surprised by the results"
+	AC_CHECK_LIB(crack, FascistCheck, AC_DEFINE(HAVE_LIBCRACK) LIBCRACK=-lcrack)
+	AC_CHECK_LIB(crack, FascistHistory, AC_DEFINE(HAVE_LIBCRACK_HIST))
+	AC_CHECK_LIB(crack, FascistHistoryPw, AC_DEFINE(HAVE_LIBCRACK_PW))
+fi
+
+AC_MSG_CHECKING(location of cracklib dictionary files)
+for dictdir in /lib /usr/lib /usr/share/lib /usr/local/lib /usr/local/share/lib NONE; do
+	if test "$dictdir" = "NONE"; then
+		AC_MSG_WARN(cracklib dictionary files not found)
+	elif test -f $dictdir/pw_dict.pwd; then
+		AC_DEFINE_UNQUOTED(CRACKLIB_DICTPATH, "$dictdir/pw_dict")
+		AC_MSG_RESULT($dictdir)
+		break
+	elif test -f $dictdir/cracklib_dict.pwd; then
+		AC_DEFINE_UNQUOTED(CRACKLIB_DICTPATH, "$dictdir/pw_dict")
+		AC_MSG_RESULT($dictdir)
+		break
+	fi
+done
+		
+if test "$with_md5crypt" = "no"
+then
+	:
+else
+	CRYPTOBJS="md5.o md5crypt.o"
+	AC_DEFINE(MD5_CRYPT)
+fi
+
+AC_SUBST(LIBMATH)
+if test "$with_gmp" != "no"
+then
+	LIBMATH="-lgmp"
+	if test "$GMPDIR" != "yes"; then
+		LIBMATH="-L$GMPDIR/.libs -L$GMPDIR $LIBMATH"
+		CPPFLAGS="-I$GMPDIR $CPPFLAGS"
+	fi
+elif test "$with_gcrypt" != "no"
+then
+	LIBMATH="-lgcrypt"
+	if test "$GCRYPTDIR" != "yes"; then
+		LIBMATH="-L$GCRYPTDIR/src/.libs -L$GCRYPTDIR $LIBMATH"
+		CPPFLAGS="-I$GCRYPTDIR $CPPFLAGS"
+	fi
+elif test "$with_mpi" != "no"
+then
+	LIBMATH="-lmpi"
+	if test "$MPIDIR" != "yes"; then
+		LIBMATH="-L$MPIDIR $LIBMATH"
+		CPPFLAGS="-I$MPIDIR $CPPFLAGS"
+	fi
+elif test "$with_tomcrypt" != "no"
+then
+	LIBMATH="-ltomcrypt"
+	if test "$TOMCRYPTDIR" != "yes"; then
+		LIBMATH="-L$TOMCRYPTDIR $LIBMATH"
+		CPPFLAGS="-I$TOMCRYPTDIR $CPPFLAGS"
+	fi
+elif test "$with_tommath" != "no"
+then
+	LIBMATH="-ltommath"
+	if test "$TOMMATHDIR" != "yes"; then
+		LIBMATH="-L$TOMMATHDIR $LIBMATH"
+		CPPFLAGS="-I$TOMMATHDIR $CPPFLAGS"
+	fi
+elif test "$with_cryptolib" != "no"
+then
+	if test "$CRYPTOLIBDIR" != "yes"; then
+		LIBMATH="$CRYPTOLIBDIR/cryptolib/lib/libcrypt.a"
+		CPPFLAGS="-I$CRYPTOLIBDIR/cryptolib/include $CPPFLAGS"
+	else
+		LIBMATH="-lcrypt"
+	fi
+else
+	LIBMATH="-lcrypto $LIBDL"
+	if test -n "$OPENSSLDIR" -a "$OPENSSLDIR" != "yes"; then
+		LIBMATH="-L$OPENSSLDIR/lib -L$OPENSSLDIR $LIBMATH $LIBDL"
+		CPPFLAGS="-I$OPENSSLDIR/include $CPPFLAGS"
+	fi
+fi
+
+AC_SUBST(LIBSKEY)
+if test "$with_libskey" = "yes"
+then
+	AC_CHECK_LIB(skey, skeychallenge, AC_DEFINE(SKEY) LIBSKEY=-lskey)
+elif test "$with_libopie" = "yes"
+then
+	AC_CHECK_LIB(opie, opiechallenge, AC_DEFINE(OPIE) LIBSKEY=-lopie)
+fi
+
+if test -z "$with_pam"
+then
+	AC_CHECK_HEADER(security/pam_modules.h, with_pam="yes", with_pam="no")
+fi
+
+AC_SUBST(LIBPAM)
+AC_SUBST(PAM_TARGETS)
+AC_SUBST(PAM_DIRS)
+if test "$with_pam" != "no"
+then
+	dnl AC_CHECK_LIB(pam, pam_start, AC_DEFINE(PAM) LIBPAM=-lpam)
+	dnl the above doesn't work as there is no libpam.a (only .so)
+	dnl XXX - libpam_misc is probably Linux-PAM specific
+	LIBPAM="-lpam"
+	AC_CHECK_LIB(pam_misc, misc_conv, AC_DEFINE(PAM_MISC) LIBPAM="$LIBPAM -lpam_misc", , -lpam $LIBDL)
+	LIBPAM="$LIBPAM$LIBDL"
+	PAM_TARGETS="pam_eps_auth.so pam_eps_passwd.so eps_chkpwd"
+	PAM_DIRS="pam_eps"
+	AC_DEFINE(PAM)
+	AC_TRY_COMPILE([#include <security/pam_appl.h>], [pam_strerror(1);], AC_DEFINE(PAM_OLD))
+fi
+
+AC_SUBST(PICFLAG)
+AC_SUBST(SHAREDFLAG)
+if test "$GCC" = "yes"
+then
+	PICFLAG="-fPIC"
+	SHAREDFLAG="--shared"
+else
+	dnl TODO: let user specify PICFLAG...
+	PICFLAG=""
+	SHAREDFLAG="-G"
+fi
+
+AC_OUTPUT(libmisc/Makefile lib/Makefile src/Makefile etc/Makefile pam_eps/Makefile Makefile stamp_h)

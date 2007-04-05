@@ -1,0 +1,135 @@
+Installing SRP-enhanced telnet and ftp on UNIX systems
+======================================================
+
+If you obtained the SRP distribution as a binary distribution, unpack the
+archive in a temporary directory.  If you are compiling from source,
+this directory should have links to the appropriate executables.
+
+MAKE SURE YOU READ THE TESTING SECTION AT THE END OF THIS DOCUMENT!!!
+
+
+INSTALLATION STEPS
+==================
+
+0.  For an automatic installation of both client and server binaries,
+    run the "installsrp" script in this directory as root, e.g.
+  
+      # ./installsrp
+
+    You SHOULD make BACKUPS of your original programs (the installsrp
+    script will make ".orig" backups if you so request but it pays to
+    be on the safe side).
+ 
+    If this does not succeed, or if you prefer to install by hand,
+    refer to the remaining instructions below.
+
+
+Client installation (done either as root or as an ordinary user):
+-----------------------------------------------------------------
+
+1.  The recommended procedure is to replace the existing "telnet"
+    and "ftp" binaries with the SRP-enhanced telnet and ftp.
+    If you have root permission, find where the "telnet" and "ftp"
+    commands live (e.g. "which telnet", "where telnet", or "type telnet").
+    Replace them with the new telnet and ftp.  You SHOULD
+    save copies of the originals:
+
+      # mv /usr/bin/telnet /usr/bin/telnet.orig
+      # cp telnet /usr/bin/telnet
+
+    If you do not have root permission, install the telnet and ftp clients
+    in a directory of your own choosing and place it before the system
+    telnet and ftp in your $PATH.
+
+    That's it!
+
+
+Using the Java telnet client (either applet or application mode):
+-----------------------------------------------------------------
+
+0.  The Java telnet client is recommended primarily for non-Unix platforms
+    and is highly experimental at this stage.  The native Unix binaries
+    are faster, support more features, and are more easily customized.
+    That having been said, the Java client can be run from any
+    platform with a Java virtual machine, including a Java-enabled
+    Web browser.
+
+1.  The Java telnet client is packaged as a single zip file, "telnet-bin.zip".
+    To run the client as an application, place this file as an entry
+    in your CLASSPATH before running java as follows:
+
+      $ CLASSPATH=/usr/local/lib/telnet-bin.zip:$CLASSPATH
+      $ export CLASSPATH
+      $ java telnet remote-host
+
+    To run the client as an applet, simply visit the URL of a page
+    that has been set up with the applet.  Instructions on how to
+    set up a site to serve the applet will be forthcoming.
+
+
+Server installation (done as root):
+-----------------------------------
+
+0.  This step is for administrators who wish to enable SRP-secured
+    telnet sessions and ftp sessions into their systems.
+    There are also mechanisms to prevent non-SRP users from telnetting and
+    ftping in once the SRP-enabled telnetd and ftpd are installed.
+
+1.  Find out where your telnet daemon and ftp daemon are located.  For
+    example, with telnetd:
+     
+      $ grep telnet /etc/inetd.conf
+      telnet  stream  tcp     nowait  root    /usr/sbin/in.telnetd    in.telnetd
+
+    The sixth field indicates the pathname of the telnet daemon.
+    Replace this with the SRP telnetd, optionally saving a copy of the
+    original telnetd:
+
+      # mv /usr/sbin/in.telnetd /usr/sbin/in.telnetd.orig
+      # cp telnetd /usr/sbin/in.telnetd
+
+    Repeat with ftpd.
+
+2.  By default, SRP telnetd and ftpd will fall back to standard,
+    insecure authentication if all secure authentication methods fail.
+    If you wish to disable this functionality and only permit secure logins,
+    edit the /etc/inetd.conf and place the "-a valid" option at the end
+    of the telnet entry and the -a option at the end of your ftp entry, i.e.
+
+      telnet  stream  tcp     nowait  root    /usr/sbin/in.telnetd    in.telnetd -a valid
+
+      ftp     stream  tcp     nowait  root    /usr/sbin/in.ftpd       in.ftpd -a
+
+    To make this change take effect, send a hangup signal (SIGHUP, 1)
+    to your "inetd" process.  If you do not know how to do this, consult
+    your system's manuals.
+
+    Note that SRP-secured logins will not work for a user until that
+    user sets his SRP password using the SRP "passwd" program.  It is
+    thus recommended that this second step be taken only when all the
+    remote users on a system have had a chance to set an SRP password.
+
+    WARNINGS: Make sure you have your SRP password set before enabling
+    the -a valid option or you WILL NOT be able to telnet back in.
+
+TESTING
+=======
+
+IF YOU INSTALLED TELNETD MAKE SURE YOU TEST YOUR SYSTEM *BEFORE* LOGGING
+OUT.  Try and telnet into your machine.  Common problems not gaining access
+are:
+
+1. The /etc/inetd.conf entries for telnet and ftp provide flags which
+   are not understood by SRP-enabled telnetd and ftpd.
+
+2. The /etc/inetd.conf entries for telnetd and ftpd provid the -a flag
+   and your tpasswd has not been set.
+
+3. Your system's /bin/login does not support the "-f" flag, which means
+   you need to put "localhost" in your /etc/hosts.equiv file.
+
+If you cannot figure out the problem, restore your original telnetd.
+
+
+Tom Wu
+tjw@cs.Stanford.EDU

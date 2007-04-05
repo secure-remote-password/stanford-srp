@@ -1,0 +1,78 @@
+Files in this kit allow, on all system which happen to use RPM
+packaging system (various Linux distributions, but not only)
+to create rpm archive with two EPS based PAM modules.  If you
+happen to have PAM configuration files in /etc/pam.d directory
+then installing your new 'pam-eps' rpm will edit these files
+to use new modules.  Uninstalling this rpm will attempt revert
+changes.
+
+Detailed instructions:
+---------------------
+- Login with adequate permissions for the following steps
+- Change to a root directory of an RPM build tree (this will
+  be /usr/src/redhat for Red Hat distributions of Linux but this
+  is an rpm define and can be different on your system) and unpack
+  this archive there.  This will put 'pam-eps.spec' in SPECS
+  subdirectory and two patches in SOURCES directory
+- Add a copy of an SRP source archive to SOURCES. If you do not
+  have it yet around retrieve it from the net.  One possible
+  location is given in a 'pam-eps.spec' header.   The provided
+  spec file assumes that this will be 'srp-1.5.0.tar.gz'; change
+  'sprver' define accordingly if this is not the case.
+- Review SOURCES/pam-eps.patch.  This patch assumes some Linux
+  distribution, likely a current one as it is using PAM and
+  was prepared with srp-1.5.0 sources.  You may need to adjust
+  things if the above is not satisfied
+- Execute 'rpm -ba SPECS/pam-eps.spec'. After successful compilation
+  you should end up with 'pam-eps-<something>.rpm' file and another
+  one with '.src.rpm' suffix.  On screen messages will tell exactly
+  where.  For Red Hat based system rpm archive with binaries
+  should include these files:
+    /lib/security/pam_eps_auth.so
+    /lib/security/pam_eps_passwd.so
+    /usr/sbin/tconf
+    /usr/doc/pam-eps-1.5.0
+    /usr/doc/pam-eps-1.5.0/00README
+    /usr/doc/pam-eps-1.5.0/README.old
+- Install the archive in a usual way (rpm -Uvh ...  will do but
+  you need root privileges for that), review and adjust, as required,
+  your PAM configuration files.  Make sure that you can still logon
+  to root and non-root accounts (from another console, over the net
+  or using su) before loging out from an installation.
+- Read 00README and README.old files, initialize EPS passwords with
+  a help of tconf and check that you can still logon once again.
+- Enjoy.
+
+Note on PAM config files
+------------------------
+Multiple occurrences of pam_nologin modules are harmless as this module
+will quietly succeed if /etc/nologin file is absent.  But if a module
+marked as "sufficient" is not preceded by pam_nologin then a standard
+"nologin" block will not work.  If this module should be used for
+things like 'xlock' and 'xscreensaver' can be a topic of a discussion.
+You can always use an editor to modify config files to your taste.
+
+Tips for upgrades
+-----------------
+Specs and patches used to create PAM modules above try avoid linking
+these modules (not tconf utility) with shared libraries so they should
+be safe across system and libraries upgrades.  Nevertheless such
+upgrade may modify your PAM configuration files and new versions may
+not know anything about your pam_eps_... modules.  Depending on a
+contents of your /etc/passwd file this may make loging after an
+upgrade quite difficult. :-) It may be prudent to keep a "hidden" copy
+of your old /etc/passwd, before changes (maybe only with a password
+for root), and uninstall 'pam-eps' before such upgrade unless you are
+sure that you can recover regardless by logging, for example, in a
+single user mode.  If you back out, as suggested above, at least old
+passwords will work. You can reinstall pam-eps after an upgrade.
+
+Another option, after you logged after an upgrade, is re-edit,
+if required, your PAM configuration files.  Scripts which do that
+for files in /etc/pam.d can be recovered from an installed rpm archive
+with a command 'rpm -qi --scripts pam-eps' which will show them on
+stdout.
+
+  Michal Jaegermann
+  michal@harddata.com
+  michal@ellpspace.math.ualberta.ca

@@ -1,0 +1,93 @@
+#!/bin/sh
+
+DOBACKUP=yes
+: ${MV:=mv} ${CP:=cp} ${CHMOD:=chmod} ${RM:=rm}
+
+inpath() {
+  for dir in `echo "$PATH" | tr : " "`
+  do
+    if [ -x "$dir"/"$1" -a "$dir" != "." ]
+    then
+      echo "$dir"/"$1"
+      return
+    fi
+  done
+}
+
+doinst() {
+  echo "Location to install $1 [default $2]:"
+  read dest
+  if [ -z "$dest" ]
+  then
+    dest=$2
+  fi
+  case $DOBACKUP in
+  [yY]*)	$MV "$dest" "$dest".orig
+  esac
+  $CP "$1" "$dest"
+  if [ -n "$MODE" ]
+  then
+    $CHMOD "$MODE" "$dest"
+  fi
+}
+
+installbin() {
+  source=$1
+  shift
+  for file
+  do
+    if [ -f "$file" ]
+    then
+      doinst "$source" "$file"
+      return
+    fi
+  done
+
+  echo "Warning: unable to find system location for $source"
+  doinst "$source" "$1"
+}
+
+if [ ! -f passwd -o ! -x passwd ]
+then
+	echo "Please run from the installation directory"
+	exit 1
+fi
+
+echo
+
+MODE=4711
+export MODE
+installbin passwd /bin/passwd /usr/bin/passwd /usr/ucb/passwd /usr/bsd/passwd `inpath passwd`
+MODE=
+export MODE
+
+installbin tconf /bin/tconf /sbin/tconf /usr/bin/tconf /usr/sbin/tconf `inpath tconf`
+
+if [ ! -s /etc/tpasswd.conf ]
+then
+  ./tconf
+fi
+
+if [ ! -f /etc/tpasswd ]
+then
+  $CP /dev/null /etc/tpasswd && $CHMOD 400 /etc/tpasswd
+fi
+
+echo "Install and replace the 'login' and 'su' executables?"
+echo "(Only do this if you are sure of what you are doing!)  [yn] \c"
+read FULLINST
+
+case $FULLINST in
+[yY]*)	;;
+*)	exit 0
+esac
+
+installbin login /bin/login /usr/bin/login /usr/ucb/login /usr/bsd/login `inpath login`
+
+MODE=4711
+export MODE
+installbin su /bin/su /sbin/su /usr/bin/su /usr/sbin/su /usr/etc/su /usr/ucb/su /usr/bsd/su `inpath su`
+MODE=
+export MODE
+
+echo Done.

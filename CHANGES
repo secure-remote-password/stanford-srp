@@ -1,0 +1,308 @@
+Version 2.1.2:
+  (telnet) Fix for CVE-2007-0956, telnetd vulnerability in
+    username handling.  References:
+
+    http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2007-0956
+    http://web.mit.edu/kerberos/advisories/MITKRB5-SA-2007-001-telnetd.txt
+
+  (ftp) Updated client to use new SRP API, which incorporates the
+    default group parameter fix from version 2.1.1.
+
+  (libsrp) Perform parameter checking only on client methods,
+    which fixes a bug that caused servers with nonstandard parameters
+    to fail to find users with such parameters.
+
+  (all) No more advertising clause in LICENSE.
+
+Version 2.1.1:
+  (telnet) Security fixes for vulnerabilities:
+    - CAN-2005-0468  Multiple Telnet Client env_opt_add() Buffer Overflow Vulnerability
+    - CAN-2005-0469  Multiple Telnet Client slc_add_reply() Buffer Overflow Vulnerability
+
+  (libsrp) Change default group parameter test strategy to accept only
+    parameters on the built-in list.  Fix originally suggested by
+    Bodo Moeller, University of Calgary.
+
+  (libsrp) Fixed big in BigIntegerCmpInt when built against OpenSSL.
+
+  (telnet) Use <errno.h> header file to declare errno when available.
+
+  (all) Added support for GNU crypto (gcrypt).
+
+Version 2.1.0:
+  (libsrp) Added support for SRP-6a.
+
+  (javascript) Added support for SRP-6a.
+
+  (telnet) Implemented proper ptmx detection to fix
+    "All network ports in use" error in FC2.
+
+Version 2.0.1:
+  (libsrp) Security/bugfixes reported by Dmitri Znosko <dmitry@famatech.com>
+    - Fixed OpenSSL seeding issues in t_misc.c.
+    - Added extern "C" to srp_aux.h for C++ compilers.
+    - Fixed memory leaks.
+
+Version 2.0.0:
+  (libsrp) Added support for SRP-6.
+
+  (all) Removed 2048-bit group size limit.
+
+  (base) Fixed lastlog detection for improved portability.
+
+  (telnet) Fixed time.h handling for improved portability.
+
+  (ftp) Fixed memory corruption in ftp client from
+    non-globbed "mput" command.
+
+  (base) Fixed carriage-return bug in conf file read.
+
+  (all) Added support for crypto accelerators through
+    OpenSSL ENGINE interface.
+
+  (all) Added support for LibTomCrypt, LibTomMath, and MPI
+
+  (libsrp) OpenSSL performance enhancements.
+
+  (libsrp) Added SRP_SERVER_LOOKUP API.
+
+Version 1.7.5:
+  (ftp) Fixed ftp/ftpd glob() vulnerability.  Patch courtesy of
+    Steve Beer (sbeer@pixelinks.com).
+
+  (ftp) Added chroot feature for guest users, courtesy of
+    Steve Beer (sbeer@pixelinks.com).  See ftp/README for details.
+
+  (base,telnet) Added patches for DEC OSF.  Patch courtesy of
+    Dave Love (d.love@dl.ac.uk).
+
+  (ftp) Fixed Y2K warnings from incorrect use of 'struct tm'.
+
+  (javascript) Added SRP Javascript demo in javascript/ directory.
+
+Version 1.7.4:
+  (telnet) Fixed telnetd AYT overflow vulnerability.
+
+  (telnet) Fixed bug with K5 ciphersuites used in conjunction
+    with session caching, patch courtesy of Jeffrey Altman
+    (jaltman@columbia.edu).
+
+  (telnet) Merged in latest round of START_TLS telnet enhancements,
+    including support for certificate chains and misc bugfixes.
+
+  (libsrp) Fixed install rule to install t_defines.h properly.
+
+  (telnet) Added -A option to disable address checking with
+    Kerberos V5, patch courtesy of Jeffrey Altman.
+
+Version 1.7.3:
+  (libsrp) Introduced new SRP API.
+
+  (telnet) Re-wired to use new SRP API.
+
+  (telnet) Added option to disable curses library.
+
+  (base) Fixed install rule in pam_eps Makefile, patch courtesy of
+    Matt Behrens (matt.behrens@kohler.com).
+
+  (libsrp) Revamped srptest, cleaned up library, added new constraints.
+
+  (libsrp/base) Moved tconf from base to libsrp.
+
+  (win32) Created win32 build area, populated with MSVC++ 6.0 projects.
+
+Version 1.7.2:
+  (telnet) Added support for DES3 Telnet Encryption.  Extended cipher
+    negotiation code to handle disabled-by-default ciphers.  Moved all
+    OFB ciphers to be disabled by default.
+
+  (telnet) Fixed session shutdown bug exhibited by TLS+FWD_X+certain
+    X clients.
+
+  (ftp) Fixed server hang caused by enabling Kerberos4 along with
+    SRP authentication methods.
+
+  (base) Fixed utmp lseek() bug on FreeBSD.  Fixed 'make install'
+    behavior on systems without PAM.
+
+Version 1.7.1:
+  (libsrp) Updated performance table with numbers from new platforms
+    and new crypto libraries.
+
+  (telnet) Fixed build errors with GMP/CryptoLib.  Incorporated support
+    for both "classic" Kerberos V4 and V5's V4-compability mode.
+    Fixed Kerberos5 credential forwarding (incorporated patches
+    supplied by Jeffrey Altman <jaltman@columbia.edu>).  Additional
+    patches for improved option negotiation also incorporated.
+
+  (libkrypto/ftp) Rewritten to use native crypto library implementations
+    of algorithms.  Moved CAST implementation to separate directory.
+    Cleaned up DES library support throughout distribution.
+
+  (base) Added the '-t' option to passwd (change EPS tpasswd only)
+
+  (all) Additional portability fixes and cleanup for SCO, AIX, HP-UX, etc.
+    Autoconfiguration improvements added.
+
+Version 1.7.0:
+  (telnet) Telnet now supports the new START_TLS and FORWARD_X options.
+    The telnet and telnetd code has been merged with code from Peter Runestig
+    <peter@runestig.com> and Jeffrey Altman <jaltman@columbia.edu>.
+    Extensive changes have been made to integrate the existing Telnet
+    authentication and encryption support to interoperate cleanly.
+    See README.TLS for more information.
+
+  (libsrp) Code cleanup.  Upgraded RNG design to resist state-compromise
+    attacks more effectively.
+
+  (base) Integrated PAM modules into normal configure/build sequence.
+    Autodetect PAM support and compiler options.
+
+  (all) Improved integration with both CryptoLib and OpenSSL.  Uses
+    primitives (e.g. SHA, DES, CAST, random number generation) supplied
+    by libraries when available.
+
+  (docs) Updated and improved README, added a separate INSTALL.
+    Updated various other documentation, including 'docs' directory.
+
+  (telnet) Synchronized Kerberos V5 support against MIT K5 1.2 release.
+
+Version 1.6.0:
+  (libsrp) Added parameter checking in t_clientopen().  When the
+    N and g paramters are received, they are first checked against
+    a built-in list of good parameters, and then subjected to a more
+    rigorous test only if no match is found.
+
+  (all) Incorporated portability fixes from William McKee
+    <wamckee@msn.com>.
+
+  (docs) Updated with copies of the new SRP RFCs, RFC 2944 (SRP Telnet
+    authentication) and RFC 2945 (SRP authentication and key-exchange).
+    These replace the old Internet-Drafts.
+
+Version 1.5.2:
+  (base) Incorporated EPS patch for non-root programs.  Thanks to
+    Hugh McDonald <hugh@gw1.symac.dhs.org> for supplying this patch.
+
+  (libsrp) Fixed prime table.  Thanks to Steve Beer <sbeer@ibm.net>.
+
+  (base) Fixed SUID tconf installation.  Thanks to Chris Evans
+    <chris@ferret.lmh.ox.ac.uk> for bringing this to my attention.
+
+  (telnet) Fixed memory leak in srp.c.  Thanks to Bob Rasumssen
+    <ras@anzio.com> for finding this.
+
+Version 1.5.1:
+  (telnet) Fixed network read bug in state.c.  Thanks to
+    Jeffrey Altman <jaltman@columbia.edu> for reporting this bug.
+
+  (base) Incorporated OpenBSD support.
+
+  (telnet) Added SRP Username prompt when -l option is not provided
+    on the command line.
+
+Version 1.5.0:
+
+  (telnet) Added support for integrity-protected encryption
+    flags in telnet and telnetd.  This ensures that negotiation
+    of encryption cannot be disabled or compromised by an active
+    attacker.  These flags will be reflected in the upcoming SRP
+    Telnet RFCs.
+
+  (base) Fixed PAM module segfaulting under some versions of
+    Linux glibc.
+
+  (base) Fixed compile-time errors under RedHat 6.0.  The two main
+    problems were a misdetection of utmp/utmpx field names and extra
+    declarations of string functions.
+
+  (base) Fixed CREATE_HOME problem in the shadow suite.
+
+  (doc) Re-wrote and clarified Open Source license terms and conditions.
+
+  (all) Incorporated patches from contributors.  Thanks to:
+	Jeffrey Altman <jaltman@columbia.edu>
+	Michal Jaegermann <michal@ellpspace.math.ualberta.ca>
+        Nelson Murilo <nelson@pangeia.com.br>
+        Joseph Gooch <mrwizard@psu.edu>
+
+Version 1.4.4:
+
+  (telnet) Incorporated recently published IPv6 patches for
+    telnet98.  INET6 support is now a configurable option,
+    and is enabled with the --with-inet6 option to configure.
+
+  (telnet) Fixed some minor configuration errors, like the
+    misdetection of UTMPX on some systems.
+
+  (libsrp) Fixed the truerand bug under Linux/glibc.  Apparently,
+    signal handlers have their own signals blocked for the
+    duration of the handler, but since the handler in truerand
+    longjmp'ed out instead of returning, the signal routines
+    never realized that the execution context had left the
+    handler, so the original signal never got unblocked.
+    To fix this, truerand now uses volatile static variables to
+    manage the timer signaling.
+
+  (base) Fixed the DES_RPC configuration problem under Linux.
+    Also fixed other minor compilation glitches.
+
+  (ftp) Fixed a small compilation error with logwtmp.
+
+  (inst) Added some more bulletproofing to the install scripts.
+    Each script verifies that the binaries are present before
+    starting, and they prompt the user before installing each
+    executable.  A PATH lookup feature has been added to
+    accommodate weird systems.
+
+Version 1.4.3:
+
+  (telnet) Fixed errors in configure.in for some platforms.
+    On FreeBSD, the DEFAULT_IM was improperly quoted in
+    configure.in.  This has been fixed.
+
+  (telnet) -lutil added for those platforms that need it.
+
+  (java) Documentation has been added to some files.
+
+  (libsrp) Bugfix for Digital Unix added.
+    Using optimization with the wrong compiler resulted in
+    an infinite loop in t_truerand.c.  #ifdefs have been
+    added around a new fixed declaration.
+
+Version 1.4.2:
+
+  (libsrp) First cut at NIS support in EPS.
+    NIS support is turned on with "./configure --with-nis" in libsrp.
+    The API has been slightly changed to accommodate NIS:
+    The old t_openpw() and t_openconf() API has been superceded
+    by the gettpent()/gettpnam()/settpent()/endtpent() interface,
+    which functions exactly like the standard getpwnam()/... calls
+    in libc, NIS support and all.
+
+    The old t_open... API is retained solely for the purpose of
+    manipulating tpasswd and tconf-formatted files.
+
+  (telnet,ftp,base) The new libsrp API is now used to obtain
+    user verifiers.  Changes are trivial.
+
+  A README.NIS file has been added to the main distribution directory
+  to assist installers.
+
+Version 1.4.1:
+
+  (telnet) Fixed hanging telnetd problem on HP-UX.
+    This problem was caused by a race condition that occurred when
+    telnetd fork()ed a child process to execute "/bin/login".
+    The signal catcher in the child process now times out to
+    avoid this condition.
+
+  (telnet) Linux telnetd now uses correct pathnames for utmp and wtmp.
+    Telnetd had "/etc/utmp" and "/etc/wtmp" hardcoded in, which
+    broke on Linux systems.  Telnetd now uses the appropriate
+    system macros to locate these files.
+
+  (eps) Miscellaneous bug fixes.
+    The "passwd" program did not handle a missing configuration file
+    gracefully, and various messages needed to be cleaned up for
+    accuracy.  A few potential buffer overruns were also fixed.

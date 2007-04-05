@@ -1,0 +1,123 @@
+README for Version 2.1.2 of the SRP distribution
+------------------------------------------------
+
+SRP stands for the Secure Remote Password protocol, which is a secure
+password-based authentication and key-exchange mechanism that can be
+used to establish session security and mutual authentication over
+untrusted networks without requiring an external public-key infrastructure
+or trusted third parties.  The SRP distribution consists of a fully-
+featured, portable library that implements SRP-based secure password
+authentication as well as implementations of popular applications and
+services like Telnet and FTP with support for transport security and
+SRP.  These password-based applications leverage the strength of the
+SRP authentication mechanism to offer fairly good protection against
+both passive and active network attacks, which is an improvement over
+most existing password-only techniques.
+
+The SRP project originated at Stanford University and was originally
+developed as a joint effort between Tom Wu and Eugene Jhong.  The
+distribution has grown into a fully-fledged Open Source project
+which is being maintained with the help of volunteers from around
+the world via the Internet, and it is free for commercial and
+non-commercial use, as long as the copyrights are included and
+appropriate credit is given (see docs/LICENSE for details).
+
+
+CONTENTS
+--------
+
+The core SRP distribution consists of the SRP library, SRP Telnet,
+SRP FTP, and the EPS utilities, which are in the 'libsrp', 'telnet',
+'ftp', and 'base' directories respectively.  For instructions on
+how to compile and install the distribution, please read the INSTALL
+document.
+
+The SRP API library (libsrp) uses an underlying cryptographic
+library to perform the large-number operations specified by the SRP
+protocol.  Currently, it supports OpenSSL, GNU MP, LibTomCrypt,
+LibTomMath, MPI, and CryptoLib, with more possibly on the way.
+The top-level configuration utility will attempt to use the same
+crypto library in Telnet and FTP, if applicable, to provide
+cryptographic algorithms for the applications themselves.
+Performance enthusiasts should read 'libsrp/README.speed' and
+'libsrp/README.math', which compares the speed of SRP on various
+platforms and libraries.
+
+Implementors interested in integrating SRP authentication with
+their own applications and code should read 'libsrp/README.API'.
+
+TLS/SRP/X11 (TSX) Telnet is a secure Telnet client/server that
+uses SRP as strong password-based authentication and key-exchange
+mechanism, and SSL/TLS as an underlying Telnet transport security
+mechanism, both implemented as part of the Telnet standard.  The
+document 'README.TLS' in the 'telnet' directory describes the
+following features supported by TSXtelnet in more detail:
+
+  - TLS-based session security (draft-ietf-tn3270e-telnet-tls-05.txt)
+  - Secure authentication with TLS:  SRP, Kerberos V5
+    (draft-altman-rfc2944bis-01.txt and draft-altman-rfc2942bis-00.txt)
+  - X11 connection forwarding (draft-altman-telnet-fwdx-02.txt)
+
+  Telnet continues to support existing security options, which are
+  already widely deployed in a variety of commerical and non-commercial
+  Telnet products:
+
+  - Classic Telnet authentication:  SRP, Kerberos V4/V5, SPX, RSA
+    (RFC 2941, RFC 2942, and RFC 2944)
+  - Classic Telnet encryption:  Triple-DES, DES, CAST-128, 40-bit CAST,
+    (RFC 2946, RFC 2947, RFC 2948, RFC 2949, RFC 2950, RFC 2952,
+    and RFC 2953)
+
+SRP FTP is in the 'ftp' subdirectory.  This is an implementation of FTP
+that negotiates SRP authentication using the FTP security extensions
+specification and protects both data and control channels with strong
+encryption.
+      RFC: 2228 (ftpext)
+
+The 'base' directory contains the EPS (Exponential Password Suite),
+which manages the new secure password-file format used by SRP.  Sites
+are encouraged to migrate their users to this improved format once
+EPS has been installed.  Of particular interest are the PAM modules
+in 'base/pam_eps'.  These permit easy and seamless integration of
+EPS into existing installations without the need to replace system
+utilities.  See 'base/pam_eps/README' for details.
+
+Java source code for a sample SRP implementation is located in the
+'java' subdirectory.
+
+Documentation, naturally, is in the 'docs' subdirectory.  The 1998
+NDSS Symposium paper that describes SRP is in 'docs/srp.ps'.
+
+
+DISCLAIMERS
+-----------
+
+The SRP distribution contains cryptographic software, although it
+contains no encryption algorithm implementations itself, only one-way
+hash functions and key-agreement algorithms.  It does, however,
+contain hooks to external cryptographic libraries for strong
+encryption.  Please be aware of any regulations on the export,
+import, or use of software that uses strong cryptography that
+may apply to you.
+
+Also read 'docs/LICENSE' for copyright information and disclaimers.
+
+
+ACKNOWLEDGMENTS
+---------------
+
+This software is built on top of many other publicly available packages,
+and contains code and patches from countless sources, individuals and
+organizations alike.  Please see the files "Acknowledgements" and
+"Copyrights" in the "docs" directory.
+
+
+CONTACT
+-------
+
+The official Website for the SRP project is:
+
+	http://srp.stanford.edu/
+
+Please send all comments, suggestions, bug reports about this software
+to Tom Wu (tjw@cs.stanford.edu).

@@ -1,0 +1,156 @@
+--- srp-1.4.4/base/src/Makefile.in.orig	Wed Jun  9 17:25:07 1999
++++ srp-1.4.4/base/src/Makefile.in	Wed Jun  9 17:25:07 1999
+@@ -69,18 +69,19 @@
+ ubindir = ${prefix}/bin
+ usbindir = ${prefix}/sbin
+ 
+-bin_PROGRAMS = login
+-usbin_PROGRAMS =
++# bin_PROGRAMS = login
++usbin_PROGRAMS = tconf
+ 
+ # id and groups are from gnu, the rest is perhaps not important
+ # also suid programs are installed by hand.
+ 
+-suidbins = su
+-suidubins = passwd tconf
++# suidbins = su
++# suidubins = passwd tconf
+ 
+-noinst_PROGRAMS = su passwd tconf
++# noinst_PROGRAMS = su passwd tconf
+ 
+-LDADD=../libmisc/libmisc.a ../lib/libshadow.a -L../../libsrp -lsrp
++#LDADD=../libmisc/libmisc.a ../lib/libshadow.a -L../../libsrp -lsrp
++LDADD= -L../../libsrp -lsrp
+ 
+ INCLUDES= -I$(top_srcdir)/lib -I../../libsrp
+ 
+@@ -119,7 +120,7 @@
+ passwd_LDFLAGS = 
+ tconf_SOURCES = tconf.c
+ tconf_OBJECTS =  tconf.o
+-tconf_DEPENDENCIES =  ../libmisc/libmisc.a ../lib/libshadow.a
++# tconf_DEPENDENCIES =  ../libmisc/libmisc.a ../lib/libshadow.a
+ tconf_LDFLAGS = 
+ CFLAGS = @CFLAGS@
+ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+@@ -283,7 +284,7 @@
+ 	$(MAKE)
+ installcheck:
+ install-exec: install-binPROGRAMS install-exec-local
+-	@$(NORMAL_INSTALL)
++#	@$(NORMAL_INSTALL)
+ 
+ install-data: install-usbinPROGRAMS
+ 	@$(NORMAL_INSTALL)
+--- srp-1.4.4/base/pam_eps/Makefile.orig	Wed Dec  9 18:43:22 1998
++++ srp-1.4.4/base/pam_eps/Makefile	Wed Jun  9 17:25:06 1999
+@@ -10,19 +10,20 @@
+ USE_LCKPWDF=-D"USE_LCKPWDF"
+ 
+ # do you need to include the one in this source?
+-#NEED_LCKPWDF=-D"NEED_LCKPWDF"
++NEED_LCKPWDF=-D"NEED_LCKPWDF"
+ 
+ # Where the SRP and support libraries live
+-SRPLIB=-L../../libsrp -lsrp -L../../libmp -lgmp
++# SRPLIB=-L../../libsrp -lsrp -L../../libmp -lgmp
++SRPLIB=-L../../libsrp -lsrp -L../../libmp /usr/lib/libgmp.a
+ 
+ # Linux-PAM
+ LDSHARED = -x --shared
+ # Solaris2.6-PAM
+-LDSHARED = -G
++#LDSHARED = -G
+ 
+ ########################################################################
+ 
+-CFLAGS += $(USE_LCKPWDF) $(NEED_LCKPWDF) -I../../include
++CFLAGS += $(USE_LCKPWDF) $(NEED_LCKPWDF) -I../../include -O2 -Wall
+ 
+ LIBAUTHSH = pam_eps_auth.so
+ LIBPASSWDSH = pam_eps_passwd.so
+--- srp-1.4.4/base/pam_eps/pam_eps_auth.c.orig	Wed Dec  9 18:43:22 1998
++++ srp-1.4.4/base/pam_eps/pam_eps_auth.c	Wed Jun  9 17:25:06 1999
+@@ -139,6 +139,7 @@
+         int retval;
+ 	const char *name;
+ 	char *p;
++	extern int t_verifypw(const char *, const char *);
+ 
+ 	/* get the user'name' */
+ 
+--- srp-1.4.4/base/pam_eps/pam_eps_passwd.c.orig	Wed Dec  9 18:43:22 1998
++++ srp-1.4.4/base/pam_eps/pam_eps_passwd.c	Wed Jun  9 17:25:07 1999
+@@ -53,11 +53,19 @@
+ 
+ #include <stdio.h>
+ #include <sys/time.h>
++#ifndef _BSD_SOURCE
+ #define _BSD_SOURCE
++#endif
++#ifndef _SVID_SOURCE
+ #define _SVID_SOURCE
++#endif
+ #include <errno.h>
++#ifndef __USE_BSD
+ #define __USE_BSD
++#endif
++#ifndef _BSD_SOURCE
+ #define _BSD_SOURCE
++#endif
+ #include <pwd.h>
+ #include <sys/types.h>
+ 
+@@ -280,6 +288,8 @@
+   struct pam_conv *appconv; /* conversation with the app */
+   struct pam_message msg, *pmsg; /* Misc for conversations */
+   struct pam_response *resp;
++  char *xstrdup(const char *);
++
+ 
+   int retval=0; /* Gets the return values for all our function calls */
+   unsigned int pflags=0; /* Holds the flags from our getpass & setpass
+--- srp-1.4.4/base/configure.in.orig	Thu Dec 10 18:45:26 1998
++++ srp-1.4.4/base/configure.in	Wed Jun  9 17:25:07 1999
+@@ -288,5 +288,6 @@
+ 	AC_DEFINE(PAM)
+ fi
+ 
+-AC_OUTPUT(libmisc/Makefile lib/Makefile src/Makefile etc/Makefile Makefile stamp_h)
++#AC_OUTPUT(libmisc/Makefile lib/Makefile src/Makefile etc/Makefile Makefile stamp_h)
++AC_OUTPUT(src/Makefile  Makefile stamp_h)
+ 
+--- srp-1.4.4/configure.in.orig	Wed Dec  9 23:55:36 1998
++++ srp-1.4.4/configure.in	Wed Jun  9 17:25:07 1999
+@@ -1,6 +1,7 @@
+ AC_INIT(configure.in)
+ AM_INIT_AUTOMAKE(srp, 1.4.4)
+ AC_PROG_MAKE_SET
+-AC_CONFIG_SUBDIRS(libsrp libkrypto base telnet ftp)
++#AC_CONFIG_SUBDIRS(libsrp libkrypto base telnet ftp)
++AC_CONFIG_SUBDIRS(libsrp base)
+ AM_CONDITIONAL(LIBMP_HACK, test true = true)
+ AC_OUTPUT(Makefile)
+--- srp-1.4.4/Makefile.in.orig	Fri Dec 11 16:21:25 1998
++++ srp-1.4.4/Makefile.in	Wed Jun  9 17:25:07 1999
+@@ -55,10 +55,15 @@
+ 
+ AUTOMAKE_OPTIONS = foreign
+ 
+-@LIBMP_HACK_TRUE@SUBDIRS = libsrp libkrypto base telnet ftp
+-@LIBMP_HACK_FALSE@SUBDIRS = libsrp libkrypto base telnet ftp
++#@LIBMP_HACK_TRUE@SUBDIRS = libsrp libkrypto base telnet ftp
++#@LIBMP_HACK_FALSE@SUBDIRS = libsrp libkrypto base telnet ftp
+ 
+-DIST_SUBDIRS = libsrp libkrypto base telnet ftp
++#DIST_SUBDIRS = libsrp libkrypto base telnet ftp
++
++@LIBMP_HACK_TRUE@SUBDIRS = libsrp base
++@LIBMP_HACK_FALSE@SUBDIRS = libsrp base
++
++DIST_SUBDIRS = libsrp base
+ 
+ EXTRA_DIST = README README.NIS ChangeLog
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4

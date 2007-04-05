@@ -1,0 +1,171 @@
+			SRP FTP
+        
+SRP FTP is an implementation of the file transfer protocol (FTP)
+and the proposed security extensions presented in the IETF draft entitled
+"FTP Security Extensions" (draft-ietf-cat-ftpsec-09.txt) using the
+Secure Remote Password (SRP) protocol for authentication.  In addition,
+the implementation allows for the encoding/decoding of private
+and safe messages based on libkrypto.
+
+The "ftp" code is derived from the Kerberos 5 patch level 1 distribution
+(krb5-1.0pl1) of gssftp which was supplied by Cygnus Support for inclusion
+in the MIT Kerberos V5 release.  The original BSD ftp implementation is
+copyrighted by MIT and the Regents of the University of California.
+
+Under the FTP security extensions, the authentication phase
+is coordinated through the use of the AUTH and ADAT commands.
+
+The format of the data exchanged is as follows:
+
+        * all integers are passed big-endian
+        * all data is base 64 encoded as specified in the "FTP Security
+                Extensions" draft and passed in ADAT messages (the <> brackets
+                indicate base64 encoding below).
+        * each data item sent is preceded by its length as a 4 byte integer
+                (a data item is an item in the <> brackets).
+
+The SRP FTP authentication protocol proceeds as follows:
+
+        Client -> Server:
+
+                send "AUTH SRP"
+
+        Server -> Client:
+
+                send "334 AUTH SRP OK"
+
+        Client -> Server:
+
+                send "ADAT <version>"
+
+                        version: 4 byte integer
+
+        Server -> Client:
+
+                send "335 ADAT=<version>"
+
+                        version: 4 byte integer
+
+        Client -> Server:
+
+                send "ADAT <username>"
+
+                        username: char array of username
+
+        Server -> Client:
+
+                send "335 ADAT=<N, g, s>"
+
+        Client -> Server:
+
+                send "ADAT <wp>"
+
+        Server -> Client:
+
+                send "335 ADAT=<yp>"
+
+        Client -> Server:
+
+                send "ADAT <client response>"
+
+        Server -> Client:
+
+                send "335 <server response>"
+
+        Client -> Server:
+
+                send "ADAT <0>"
+
+        Server -> Client:
+
+                send "335 ADAT=<list of ciphers, list of hashs, seqnum>"
+
+                       list of ciphers: unsigned char array of cipher ids
+                        list of hashs: unsigned char array of hash ids
+                        seqnum: server encode sequence number (4 byte integer)
+
+        Client -> Server:
+
+                send "ADAT <selected cipher, selected hash, seqnum>"
+
+                        selected cipher: unsigned char
+                        selected hash: unsigned char
+                        seqnum: client encode sequence number (4 byte integer)
+
+        Server -> Client:
+
+                send "235 ACCEPT" | "535 REJECT"
+
+        N, g, s, wp, yp, client response and server response are elements
+of the SRP protocol.
+
+        The last round of negotiation determines the cipher and the
+hash functions which will be used to encode and decode safe and private
+messages.  The server sends a list of supported ciphers and a list of
+supported hashes and the client chooses which cipher and hash to use.
+The currently supported ciphers and hashes and their respective ids are
+listed below:
+
+        Supported Ciphers:
+
+	NONE (1)
+	BLOWFISH_ECB (2)
+	BLOWFISH_CBC (3)
+	BLOWFISH_CFB64 (4)
+	BLOWFISH_OFB64 (5)
+	CAST5_ECB (6)
+	CAST5_CBC (7)
+	CAST5_CFB64 (8)
+	CAST5_OFB64 (9)
+	DES_ECB (10)
+	DES_CBC (11)
+	DES_CFB64 (12)
+	DES_OFB64 (13)
+	DES3_ECB (14)
+	DES3_CBC (15)
+	DES3_CFB64 (16)
+	DES3_OFB64 (17)
+
+        Supported Hash Functions:
+
+        MD5 (1)
+        SHA (2)
+
+The current default cipher is CAST_CBC and the current default hash is SHA.
+The chosen cipher and hash function are used by libkrypto to encode and
+decode private and safe messages.  Private and safe messages are used to
+support the ENC and MIC commands detailed in the FTP Security Extensions
+draft respectively.  SRP FTP currently does not support the CONF command.
+
+The following additional ftp and ftpd flags are implemented:
+
+        ftp flags:
+
+        -c: specify cipher
+        -h: specify one-way hash function
+
+        ftpd flags:
+
+        -a: only permit SRP authorized logins
+
+Additional features supported by SRP FTP:
+
+- Guest group user chroot capability:
+  The ftpd demon has the ability to declare a normal user (i.e. not
+  'guest' or 'anonymous') as a 'chrooted' user: i.e. whenever that user
+  logs into the ftpd server, the user's effective file system root
+  ('/') is set to a specified location within the host computer's
+  file system. For example, we declare ftp user 'joe' as having
+  '/foo/./bar' as home directory in passwd.  Then, when joe logs
+  into the ftp server, his apparent root directory is at /foo on
+  the server, and his working directory is initially set to /foo/bar
+  on the server (which joe sees as '/bar' if he types 'pwd').
+  This feature is triggered by the "/./" component of the user's
+  home directory in /etc/passwd.
+  As for the previously supported 'guest' chroot feature, you must
+  prepare at least 3 files for each chroot 'jail'. For the above
+  example with user 'joe', the files (typically owned by root,
+  world readable) would be:
+       - /foo/bin/ls (e.g. statically linked, world executable)
+       - /foo/etc/passwd (with the minimal entries needed)
+       - /foo/etc/group (with minimal entries needed)

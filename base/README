@@ -1,0 +1,11 @@
+			Exponential Password Suite (EPS)
+
+This distribution includes source for building the Exponential Password
+Suite (EPS) which consists of replacements for login, su, passwd and
+a new utility called tconf.  Also included are PAM modules that support
+EPS.
+
+The code for login, su and passwd are based on the Shadow Password Suite
+for Linux (shadow-970616).  The Linux Shadow Password Suite is based on
+the Shadow Suite by Julianne F. Haugh and is copyright (c) 1988-1997,
+Julianne F. Haugh and copyright (c) 1996, Marek Michalkiewicz.

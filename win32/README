@@ -1,0 +1,81 @@
+Windows-specific build information for the SRP distribution
+-----------------------------------------------------------
+
+The files in this directory are intended for use with Microsoft
+Visual C++ under the x86 Win32 platform.  I have developed and
+tested these workspaces and projects under MSVC++ 6.0 (SP3),
+with Windows NT Server 4.0.  Results with different development
+environments and operating systems may vary.
+
+
+File/Directory Layout
+---------------------
+
+There is one top-level workspace in this directory for each
+supported crypto library configuration, e.g. "srp_openssl.dsw".
+Each combination of package and crypto library results in a
+subdirectory of the form "PACKAGE_LIBRARY", e.g. "libsrp_openssl".
+Each of these subdirectories contains a set of project files for
+that package with that crypto library support.
+
+At the moment, support for crypto libraries and packages is
+rather sparse.  This will improve quickly.
+
+
+Pre-Installation Preparation
+----------------------------
+
+The "win32/include" and "win32/lib" subdirectories are provided
+as a common location to store crypto library files so that they
+will be found when building the SRP distribution under Windows.
+
+OpenSSL
+
+   If you are using OpenSSL, make a copy of the contents of its
+   "include" directory under the "win32/include" subdirectory.
+   Some Win32-based build procedures for OpenSSL may leave the
+   include files under "inc32" instead of "include".  In any
+   event, you should end up with an "openssl" subdirectory
+   under "win32/include".  Next, copy the file "libeay32.lib"
+   to the "win32/lib" subdirectory.  This can be either the
+   static library (recommended) or the DLL import library;
+   see below if you aren't sure which one to use.
+
+LibTomCrypt
+
+   If you are using LibTomCrypt, copy all of the header files
+   (mycrypt*.h, tommath.h) from the library source to the
+   "win32/include" subdirectory.  Copy the "tomcrypt.lib"
+   file to the "win32/lib" subdirectory.
+
+LibTomMath
+
+   If you are using LibTomMath, copy the "tommath.h" header
+   file to the "win32/include" subdirectory.  Copy the
+   "tommath.lib" file to the "win32/lib" subdirectory.
+
+
+Building the Distribution
+-------------------------
+
+Load the workspace that corresponds to the crypto library you are
+using, e.g. "srp_openssl.dsw".  Select "Batch Build" and then
+"Build".  This will build all supported projects.  Look under
+the "Debug" and "Release" subdirectories of the "PACKAGE_LIBRARY"
+directories for the results of the builds.
+
+
+Using the Binaries
+------------------
+
+Under "libsrp_LIBRARY", the main SRP library is built by the
+"srp" and "srpstatic" projects.  "srp" builds a DLL, while
+"srpstatic" builds a static library.  I usually recommend
+using a static version of the underlying crypto library to
+link SRP.DLL, because it will then be built as a self-contained
+module instead of requiring you to lug around DLLs for your
+crypto library along with it.  This should make it easier to
+distribute with your application.  If you plan to link against
+the same crypto library in your application itself, you should
+probably link it against SRPSTATIC.LIB to avoid duplicating code
+in your binaries.

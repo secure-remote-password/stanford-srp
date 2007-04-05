@@ -1,0 +1,89 @@
+README for updated PAM module support in EPS
+--------------------------------------------
+
+EPS modules allow Exponential Password Suite to be used by all
+programs which require authentication information or manipulate
+password files.  Once they are installed and properly configured there
+is nothing special to be done (unless such programs do not go through
+libraries and try to manipulate password files themselves).
+
+You will find basic principles of configuring and using these
+modules in README.old file but not what follows.
+
+If your PAM ("Pluggable Authentication Modules") have separate
+configuration files in /etc/pam.d directory then all these
+files should be modifies if you want to use EPS modules.
+
+The following perl script attempts to do so:
+
+#!/usr/bin/perl
+while (<>) {
+  if (m{/pam_pwdb}) {
+    if (m{^auth\s}) {
+      print "auth       sufficient   /lib/security/pam_eps_auth.so\n";
+      s/nullok/nullok use_first_pass/;
+    }
+    elsif (m{^password\s}) {
+      # if you want update both /etc/passwd and /etc/tpasswd
+      # when changing passwords then use 'required' in both cases
+      print (($ARGV[0] =~ m{passwd}) ?
+	"password   sufficient" :  "password   required");
+      print "     /lib/security/pam_eps_passwd.so\n";
+    }
+  }
+  print;
+}
+
+If will be executed automatically if you are installing EPS support
+with a help of rpm utility.
+
+Note that "sufficient" designation mean that if an acction was
+performed succesfully by the given module then the next one will be
+not called.  In particular this line:
+
+password   sufficient   /lib/security/pam_eps_passwd.so
+
+in /etc/pam.d/passwd file means that if /etc/tpasswd exists __and__
+EPS suite was configured with a help of 'tconf' utilty then changing
+password  will __not__ modify /etc/passwd file.  Therefore for each
+account with an entry in /etc/tpasswd you can put "*", or "EPS",
+or something like that in a password field of a corresponding entry
+in /etc/passwd and it will stay that way.  Such /etc/passwd entries
+will not harm an authentication because of "sufficient" in "auth"
+actions for EPS modules of PAM configuration.  That way you can
+switch all account gradually to EPS authentication.
+
+If you do not want to skip action of subsequent modules regardless
+of an outcome then use "required" in place of "sufficient".  For
+password changes that means that both password files will be updated
+during a password change.
+
+If you have an old PAM setup then consult README.old for details of
+setup.  The following paragraph from there about 'tconf':
+
+"Install the "tconf" binary in a suitable directory, like /sbin,
+/usr/sbin, or /bin, and run it once as root.  If you are short on
+time, select one of the pre-generated prime fields.  Otherwise, you
+may choose to generate your own random field."
+
+if still valid (rpm based installation will put in /usr/sbin ).
+
+Do not delete /etc/passwd even if all passwords are already checked
+only agains /etc/tpasswd or you will get into a trouble.  Multiple
+programs and libraries expect to find an assorted information in
+/etc/passwd.
+
+Note about recompilation
+------------------------
+If you are recompiling EPS modules yourself make sure that for all
+extra libraries you are using you link static versions and not shared
+ones.  In case of file system troubles it may turn out that required
+libraries are on a file system which is still not mounted.  This, in
+turn, has a potential of making login into an "interesting" exercise.
+Also updates may cause that a particular version of a shared library
+vanished with results similar like above.
+
+  Enjoy,
+  Michal Jaegermann,
+  michal@harddata.com
+  michal@ellpspace.math.ualberta.ca

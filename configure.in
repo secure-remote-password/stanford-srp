@@ -1,0 +1,6 @@
+AC_INIT(configure.in)
+AM_INIT_AUTOMAKE(srp, 2.1.2)
+AC_PROG_MAKE_SET
+AC_CONFIG_SUBDIRS(libsrp libkrypto telnet ftp base)
+AM_CONDITIONAL(LIBMP_HACK, test true = true)
+AC_OUTPUT(Makefile)

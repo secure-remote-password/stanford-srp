@@ -1,0 +1,141 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if you have <vfork.h>.  */
+#undef HAVE_VFORK_H
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define vfork as fork if vfork does not work.  */
+#undef vfork
+
+#undef POSIX_TERMIOS
+
+#undef HAVE_SHADOW
+
+#undef NOENCRYPTION
+
+#undef GNU_MP
+
+#undef GCRYPT
+
+#undef MPI
+
+#undef TOMCRYPT
+
+#undef TOMMATH
+
+#undef CRYPTOLIB
+
+#undef OPENSSL
+
+#undef KERBEROS
+
+#undef OPENSSL_DES
+
+#undef CRYPTOLIB_DES
+
+#undef FTP_BUFSIZ
+
+#undef SRP
+
+#undef FTPAUTH
+
+#undef FTPAUTH_PATH
+
+#undef HAVE_SETUTENT
+
+#undef HAVE_SETUTXENT
+
+#undef HAVE_UPDWTMP
+
+#undef HAVE_UPDWTMPX
+
+#undef NO_UT_EXIT
+
+#undef NO_UT_HOST
+
+#undef NO_UT_PID
+
+#undef NO_UT_TYPE
+
+#undef POSIX_SIGNALS
+
+#undef USE_SIGPROCMASK
+
+#undef WAIT_USES_INT
+
+#undef USE_GLOB
+
+/* The number of bytes in a int.  */
+#undef SIZEOF_INT
+
+/* The number of bytes in a long.  */
+#undef SIZEOF_LONG
+
+/* The number of bytes in a short.  */
+#undef SIZEOF_SHORT
+
+/* Define if you have the getcwd function.  */
+#undef HAVE_GETCWD
+
+/* Define if you have the getdtablesize function.  */
+#undef HAVE_GETDTABLESIZE
+
+/* Define if you have the getusershell function.  */
+#undef HAVE_GETUSERSHELL
+
+/* Define if you have the setenv function.  */
+#undef HAVE_SETENV
+
+/* Define if you have the seteuid function.  */
+#undef HAVE_SETEUID
+
+/* Define if you have the setresuid function.  */
+#undef HAVE_SETRESUID
+
+/* Define if you have the setreuid function.  */
+#undef HAVE_SETREUID
+
+/* Define if you have the <stdarg.h> header file.  */
+#undef HAVE_STDARG_H
+
+/* Define if you have the <stdlib.h> header file.  */
+#undef HAVE_STDLIB_H
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define if you have the <sys/select.h> header file.  */
+#undef HAVE_SYS_SELECT_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the crypt library (-lcrypt).  */
+#undef HAVE_LIBCRYPT
+
+/* Define if you have the dl library (-ldl).  */
+#undef HAVE_LIBDL
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+

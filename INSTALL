@@ -1,0 +1,476 @@
+Installing the SRP distribution
+-------------------------------
+
+Getting Started
+---------------
+
+Installation is explained in detail in the configuration section below.
+If you want to build a full-fledged copy of the SRP distribution, the
+simplest way to get started is to unpack and build OpenSSL on your
+system, and run:
+
+  $ ./configure --with-openssl=/usr/local/src/openssl-0.9.8e
+                # Replace with absolute path to OpenSSL on your system
+  $ make
+  $ make install
+
+This will build the SRP distribution with default options enabled,
+and then install the binaries under /usr/local, which is the default
+location.  If your system already has OpenSSL installed, then
+'./configure' without options should work.
+
+
+Configuring the Distribution
+----------------------------
+
+The distribution is configured by specifying options to the top-level
+'configure' script.  The following sections discuss the various
+supported options in more detail.
+
+1.  Configuring crypto library support
+
+  The SRP library uses an underlying cryptographic library to do
+  large-number arithmetic, compute message digests, and generate
+  random numbers.  In addition, other parts of the distribution,
+  like SRP Telnet, may use this library to encrypt data and
+  even negotiate SSL/TLS sessions.
+
+  The distribution can be configured to use a variety of crypto
+  and big integer libraries.  The choice of libraries may also
+  influence the options enabled in the SRP distribution and the
+  necessity for additional libraries.  Since encryption is no
+  longer bundled with the distribution, encryption support is
+  entirely dependent on underlying libraries.  Read the section
+  below (A through F) depending on which library you plan to use.
+
+  A.  OpenSSL
+
+    Versions:         0.9.8e (recommended)
+                      0.9.5a (minimum)
+    Where to get it:  http://www.openssl.org/
+
+    OpenSSL is probably the best option for most environments.
+    It is available on a wide variety of platforms, has fairly
+    fast implementations of many cryptographic algorithms, and
+    supports SSL/TLS, which is used by SRP Telnet for session
+    security.
+
+    Option:
+      --with-openssl=<absolute_path_to_openssl_directory>
+
+    The directory must be an absolute path to the directory
+    where OpenSSL was built on your system.  If this option is
+    specified without a directory, the Makefiles will look for
+    OpenSSL in the default system locations.
+
+    The SRP library will use OpenSSL's implementation of SHA-1
+    and their random number generator, and will combine its own
+    entropy sources with OpenSSL's default seeding routines.
+
+    Additionally, CAST and DES will be enabled for both FTP and
+    Telnet, and Blowfish and MD5 will be enabled for FTP; OpenSSL's
+    implementations of these algorithms will be used.  Kerberos
+    (if enabled) will use OpenSSL's DES implementation instead
+    of its own.
+
+    NOTE: OpenSSL 0.9.7 no longer defines DES "compatibility"
+    symbols, so if you use 0.9.7 or later in conjunction with
+    --with-krb4, you may get link errors unless you specify
+    --with-des and give it the path to a compiled copy of libdes.
+
+  B.  GNU MP
+
+    Versions:         4.2.1 (recommended)
+                      2.0.2 (minimum)
+    Where to get it:  http://gmplib.org/
+
+    GNU MP is the GNU multiprecision math library.  Although it
+    is not designed as a cryptographic library, the SRP distribution
+    can use it for arbitrary-precision math and fall back on internal
+    implementations of other algorithms.  The latest versions of GMP
+    offer excellent performance, comparable to that of the routines
+    in the OpenSSL library.  Versions as old as 1.3.2 have been known
+    to work, though performance is not as good as more recent versions.
+
+    Option:
+      --with-gmp=<absolute_path_to_GMP_directory>
+
+    Like with OpenSSL, the directory must be an absolute path, and
+    if it is not specified, the Makefiles will look in the default
+    system directories for GMP.
+
+    The SRP library will use its internal implementation of SHA-1,
+    as well as an internal cryptographic random-number generator
+    (based on SHA-1) and its own entropy generation code.  Since
+    GNU MP does not contain any encryption algorithms or hash
+    functions, specifying --with-gmp alone will result in Telnet
+    and FTP with no encryption enabled (FTP will still support SHA-1
+    for message authentication).
+
+    To enable DES encryption, get Eric Young's libdes, build it,
+    and specify --with-des=<libdes_directory>.  To enable CAST
+    encryption, contact me for a copy of my public-domain CAST
+    source (see cast/README) and specify --with-cast.  Telnet
+    and FTP will find it in the right place once it is installed.
+
+  C.  Libgcrypt
+
+    Versions:         1.2.3 (recommended)
+                      1.2.0 (minimum)
+    Where to get it:  ftp://ftp.gnupg.org/gcrypt/libgcrypt/
+
+    Libgcrypt is the GNU crypto library, used by GnuPG, GnuTLS,
+    and other packages.
+
+    Option:
+      --with-gcrypt=<absolute_path_to_libgcrypt_directory>
+
+    The SRP library will use libgcrypt's bignum/MPI implementation,
+    its SHA-1 implementation, and its random number generator.
+
+  D.  TomCrypt
+
+    Versions:         1.16 (recommended)
+                      1.00 (minimum)
+    Where to get it:  http://libtom.org/
+
+    LibTomCrypt is a cryptography library implemented by
+    Tom St Denis.  It contains the LibTomMath bignum library,
+    described below, as well as implementations of a wide range
+    of cryptographic algorithms.
+
+    Option:
+      --with-tomcrypt=<absolute_path_to_libTomCrypt_directory>
+
+    The SRP library will use LibTomCrypt's SHA-1 implementation,
+    as well as its Yarrow-based random number generator, and
+    combine its entropy sources with LibTomCrypt's platform-
+    specific entropy-gathering routines.
+
+    Additionally, CAST encryption will be enabled for both FTP and
+    Telnet, and MD5 (for integrity checking) will be enabled for FTP.
+    DES, Triple-DES, and Blowfish are not yet integrated at this time.
+
+  E.  TomMath
+
+    Versions:         0.40 (recommended)
+                      0.15 (minimum)
+    Where to get it:  http://libtom.org/
+
+    LibTomMath is a large-integer math library based on the
+    MPI library API but re-implemented by Tom St Denis.
+    LibTomMath has considerably improved performance relative
+    to MPI.
+
+    Option:
+      --with-tommath=<absolute_path_to_libTomMath_directory>
+
+    Since LibTomMath does not include a random number generator,
+    symmetric ciphers, or hash algorithms, SRP will use its own
+    internal implementations, unless overridden as described in
+    the GNU MP section above.
+
+  F.  MPI
+
+    Version:          1.8.6 (recommended)
+    Where to get it:  http://thayer.dartmouth.edu/~sting/mpi/
+
+    MPI is a simple, portable large-integer arithmetic library
+    written by Michael J. Fromberger.  It was designed primarily
+    for portability as opposed to speed.
+
+    Option:
+      --with-mpi=<absolute_path_to_MPI_directory>
+
+    Since MPI does not include a random number generator,
+    symmetric ciphers, or hash algorithms, SRP will use its own
+    internal implementations, unless overridden as described in
+    the GNU MP section above.
+
+  G.  CryptoLib
+
+    Versions:         1.2 (recommended)
+                      1.1 (minimum)
+    Where to get it:  ftp://ftp.zedz.com/pub/crypto/libraries/cryptolib/
+
+    CryptoLib was written by Matt Blaze and Jack Lacy at AT&T Bell Labs
+    several years ago.  The official site tells you how to get an
+    official copy via E-mail; it should be possible to find CryptoLib
+    via a mirror site if you look hard enough.  CryptoLib supports
+    a handful of cryptographic algorithms, and contains its own
+    large number math library.
+
+    Option:
+      --with-cryptolib=<absolute_path_to_cryptolib_directory>
+
+    To use CryptoLib, you must specify the directory in this option,
+    because the library's name conflicts with a library found on
+    many systems (libcrypt.a).
+
+    Because of a bug in CryptoLib 1.1's SHA-1 implementation, the
+    SRP library will still use its own SHA-1 code.  It will use
+    CryptoLib's DES-based random number generator, but because
+    CryptoLib 1.1's entropy-gathering routine has problems on some
+    platforms, SRP will gather its own entropy and use it to seed
+    CryptoLib's generator.
+
+    CryptoLib contains DES support, which will be used by both
+    Telnet and FTP.  To enable CAST encryption as well, contact me
+    for a copy of my public-domain CAST source (see cast/README)
+    and specify --with-cast.  Telnet and FTP will find it in the
+    right place once it is installed.
+
+    CryptoLib does not support numbers larger than 2048 bits,
+    which causes a problem with version 2 of libsrp which does
+    support larger moduli.
+
+2.  Other options
+
+  'configure' understands a variety of other options, most of
+  which take default values depending on how the main crypto
+  library is configured:
+
+  --prefix=<directory>
+    Sets the install location for binaries.  Applications are
+    installed in the 'bin' subdirectory, servers and administrator
+    utilities go in 'sbin', libraries go in 'lib', and header files
+    go in 'include'.  By default this is '/usr/local'.
+
+  --with-pam
+    The SRP distribution comes with support for Pluggable
+    Authentication Modules (PAM).  Normally, the configuration
+    script will attempt to autodetect PAM support, but this option
+    can be explicitly enabled or disabled.  See base/pam_eps/README
+    for information about the EPS PAM modules.
+
+  --enable-tls
+    SSL/TLS in Telnet is enabled by default when OpenSSL is used.
+    --disable-tls disables it.  This option is disabled and not
+    supported with CryptoLib and GNU MP.
+
+  --enable-tls_krb5
+    Enable Kerberos5-based authentication via TLS ciphersuites.
+    This option is experimental and is disabled by default.
+    It requires Kerberos5 ciphersuite support in your TLS library.
+
+  --with-zlib
+    This enables zlib-based compression in TLS.  This option is
+    experimental and is disabled by default.  Eventually this
+    will be update to autodetect libz once compression support
+    is more fully standardized and tested in TLS.
+
+  --enable-forward_x
+    Enable X11 session forwarding in Telnet.  This option is
+    enabled by default and can be disabled with --disable-forward_x.
+
+  --enable-fwdx_unix_sock
+    If 'enable-forward_x' is enabled, this enables the use of local
+    (Unix domain) sockets.  --disable-fwdx_unix_sock forces Telnet
+    to use a loopback IP address (127.0.0.1) instead.
+
+  --with-cast
+    Enables the CAST-128 encryption algorithm and the associated
+    encryption options in Telnet and FTP.  If OpenSSL or LibTomCrypt
+    is used, this is enabled by default, and the crypto library's CAST
+    implementation is linked in.  Otherwise, CAST is disabled by default.
+    If CAST is explicitly enabled with a crypto library that doesn't
+    support it, the unbundled CAST source code in the "cast" subdirectory
+    is required.  Please contact Tom Wu (tjw@cs.stanford.edu) if you wish
+    to obtain a copy of this implementation.
+
+  --with-des, --with-des=<absolute_path_to_libdes_directory>
+    Enables Telnet/FTP DES encryption.  If either OpenSSL or CryptoLib
+    is used, this option is enabled by default, and that library's
+    DES implementation is used.  This option is disabled by default
+    with GMP.  If the option is explicitly enabled with a directory
+    argument, Telnet expects to find Eric Young's libdes (version 3
+    or later recommended) there.
+
+  --with-rsa
+    Enables RSA-based ciphersuites and certificates with SSL/TLS
+    enabled Telnet.  This is enabled by default, but should be
+    disabled (--without-rsa) if your copy of OpenSSL was built
+    without RSA support.
+
+  --enable-loginf
+    Uses the '-f' option if your /bin/login supports it.
+    --disable-loginf if it doesn't.
+
+  --with-krb4
+    Kerberos V4 authentication.  Disabled by default.  If this flag is
+    given in conjunction with --with-krb5, K5's V4 compatibility mode
+    is enabled.  Otherwise, "classic" Kerberos V4 is assumed.
+
+  --with-krb5, --with-krb5=<absolute_path_to_MIT_K5_distribution>
+    Kerberos V5 authentication.  Disabled by default.  This will
+    generally require MIT's Kerberos V5 distribution, the directory
+    to which should be given as an argument to this option.
+    This directory is usually named 'src' in the distribution
+    and has 'include' and 'lib' subdirectories.
+    NOTE: this option is not currently supported with the CryptoLib
+    library option due to symbol conflicts.
+
+  --with-srp
+    SRP authentication.  Always enabled.  --without-srp does not
+    work and is not supported.
+
+  --with-spx
+    SPX authentication.  Disabled by default.  Experimental and
+    not officially supported.
+
+  --with-rsaencpwd
+    RSA encrypted password authentication.  Disabled by default.
+    Experimental and not officially supported.
+
+  --with-krb4encpwd
+    Kerberos V4-encrypted password authentication.  Disabled by default.
+    Experimental and not officially supported.
+
+  --disable-ncurses, --disable-curses
+    Normally, the configuration script looks for terminal support in
+    termlib, ncurses, curses, and termcap, in that order.  These
+    options suppress the automatic check for the corresponding libraries.
+    This is useful if your system has a buggy "ncurses" or "curses"
+    library.
+
+  --enable-glob
+    Use glob(3) in libc for pattern matching in ftp/ftpd.  This should
+    ONLY be enabled if you know your libc's glob(3) is safe; by default
+    this is disabled, and a builtin substitute is used.
+
+  --with-engine
+    Use ENGINE support in OpenSSL for external crypto support.
+    SRP can take advantage of some crypto accelerators to boost
+    performance.
+
+3.  Building the distribution
+
+  Type 'make' from the top-level directory.
+
+4.  Intalling the binaries
+
+  Type 'make install' from the top-level directory as root.  Files
+  will be installed under the directory tree specified by the
+  --prefix option, or /usr/local by default.
+
+5.  Setting up your system
+
+  You should be able to test the 'telnet' and 'ftp' client binaries
+  directly by pointing them at servers.  For more information on how
+  to use them, particularly their new security features, read
+  'telnet/README', 'telnet/README.TLS', and 'ftp/README'.
+
+  This section describes how to set up a server with EPS passwords.
+
+  Getting Started Quickly:
+
+  - Run 'tconf' as root (this utility is in 'base/src').  Pick one of
+    the "predefined" fields.  Field #6 is a good choice (1024 bits).
+    This creates /etc/tpasswd.conf, which is needed by the rest of
+    the distribution.
+
+  - If you're using PAM, and you have a file called '/etc/pam.d/passwd'
+    file, then add the following line at the end of that file:
+
+    password  required  /lib/security/pam_eps_passwd.so
+
+    If your PAM installation uses '/etc/pam.conf' instead, then add
+    the following line in the 'passwd' section:
+
+    passwd   password   required   /lib/security/pam_eps_passwd.so
+
+    and the following line in the DEFAULT section:
+
+    DEFAULT  password   required   /lib/security/pam_eps_passwd.so
+
+    The pathname in the last field should point to where you actually
+    installed the EPS PAM modules.
+
+  - The 'passwd' command should now continue to set legacy passwords in
+    /etc/passwd or /etc/shadow, while also setting EPS passwords in the
+    /etc/tpasswd file.  You can test this by changing a user's password
+    with 'passwd' and seeing if an entry is created in /etc/tpasswd.
+
+  - If this works, you should be able to install 'telnetd' and 'ftpd',
+    and test logging into your system securely.  Congratulations!
+
+
+The rest of this document covers the administrative housekeeping
+involved with the EPS password system in more detail.  It also
+covers more advanced options for customizing Telnet and FTP
+security options on your system.
+
+
+THE EXPONENTIAL PASSWORD SUITE
+------------------------------
+
+This distribution of EPS is designed to complement your existing
+password file format (/etc/passwd or /etc/shadow).  Installing
+EPS will create two additional files for providing secure remote
+authentication:
+
+	/etc/tpasswd
+	/etc/tpasswd.conf
+
+Once the EPS passwd utility is installed, any subsequent password
+changes by a user will be reflected in BOTH the regular password
+file and the EPS /etc/tpasswd file.  Thus installing the EPS suite
+will NOT BREAK any programs (e.g. xlock) which rely on the regular
+password file.  For additional flexiblity, EPS is available as a
+set of Pluggable Authentication Modules (PAM), which integrate
+seamlessly with existing password-management software.
+
+The distribution also includes replacements for login and su.  These
+versions will authenticate users using the tpasswd file if
+the user has set their tpasswd entry and revert to authenticating
+based on the regular password file if not.  Note that installing
+login and su is completely OPTIONAL and should not be done at all
+if you are using PAM.  Since the tpasswd file and the regular
+password file are kept in sync by the EPS passwd utility,
+the regular login and su should continue to work correctly.  However,
+the EPS login program provides the added feature of prompting users
+to change their passwords the first time they log into the system
+after the EPS suite has been installed.  This forces them to update
+their tpasswd entry which allows for secure remote authentication.
+
+The login, su and passwd programs are based on the Linux Shadow
+Suite distribution (shadow-970616).  The EPS versions support most
+of the features of the shadow suite (e.g. /etc/login.defs).  For more
+information about these features, please refer to the shadow suite.
+
+The tconf utility updates the /etc/tpasswd.conf which holds the
+parameters for N and g (see web site if you would like this explained).
+Since N and g do not necessarily need to be changed, tconf need only
+be run at install time.  It is recommended that you start off with
+a 1024-bit field size.
+
+
+TELNET AND FTP
+--------------
+
+The new SRP-enabled versions of telnet, telnetd, ftp and ftpd implement
+the SRP protocol and provide for secure remote password-only authentication
+when an SRP-enabled client connects with an SRP-enabled server.  However,
+note that all these programs are BACKWARDS-COMPATIBLE with existing
+clients and servers.  Thus, for example, a non-SRP-enabled telnet client 
+may connect with an SRP-enabled telnet server and vice versa although,
+of course, the authentication/connection will be insecure.
+Some new features included are:
+
+	ftp -c [cipher] -h [hash]	select cipher and hash
+	ftpd -a				only allow SRP enabled clients
+	telnetd -a valid		only allow SRP enabled clients
+
+Some notes about using the telnet and ftp clients:
+
+1. For both telnet and ftp, once an SRP authentication fails (you typed
+   in your password wrong) the clients will attempt to revert to a
+   regular authentication (send cleartext password).  Thus, if you want
+   to reauthenticate using SRP you should abort the insecure authentication
+   and try again.  In ftp you may use the "user <username>" command and
+   in telnet you should restart the client.
+
+2. Note that if you use the -a option with ftpd and telnetd, you will 
+   NOT be able to connect using non-SRP-enabled clients.  Make sure
+   you have clients available on the hosts from which you want to
+   connect and that all users have set their tpasswd entry.

@@ -1,0 +1,307 @@
+TLS/SRP/X11 (TSX) Telnet
+========================
+
+Description
+-----------
+
+TLS/SRP/X11 (TSX) Telnet is a fully-featured Open Source secure Telnet
+client/server that has its origins in the 1995 MIT telnet codebase,
+but which has been extensively enhanced and updated over the last
+several years to integrate, among other things, support for advanced
+authentication technology and session security.  Unlike some existing
+Telnet variants, TSXtelnet is integrated as part of the Telnet
+standard instead of a separate protocol, so this implementation will
+interoperate seamlessly will existing telnets and telnetds,
+and will continue to interoperate with future Telnets as new
+features are added.  It is possible to install this TSXtelnet as a
+replacement for existing insecure Telnets (actually, it's a *really*
+good idea), and security features will be autonegotiated at connect
+time to use the strongest authentication and encryption algorithms
+that are supported by both sides.  Telnet now supports:
+
+  - TLS-based session security
+    When both client and server successfully negotiate the START_TLS
+    Telnet option, both sides negotiate a SSLv3/TLSv1 session and
+    use it to secure the Telnet session, much like HTTPS.  Unlike
+    HTTPS, this option is interactively and automatically negotiated
+    during the Telnet session, so no separate port number, protocol
+    name, or server listener is required.
+      I-D: draft-ietf-tn3270e-telnet-tls-05.txt (START_TLS)
+
+  - Secure authentication with TLS:  SRP, Kerberos V5
+    In addition to traditional SSL client certificates, TLS-enabled
+    Telnet also supports strong password methods like SRP, and other
+    authentication alternatives like Kerberos V5.  These authentication
+    methods have been updated to authenticate the TLS key exchange
+    even non-PKI sessions are negotiated.  This allows for secure
+    mutual authentication and resistance to MITM attacks without the
+    need for certificates.
+      I-D: draft-altman-rfc2944bis-00.txt (SRP) (also see RFC 2944)
+      I-D: draft-altman-rfc2942bis-00.txt (K5) (also see RFC 2942)
+
+  - X11 connection forwarding
+    The FORWARD_X Telnet option sets up a tunnel between client and
+    server over which X windows packets are forwarded.  The DISPLAY
+    variable in the remote session is set to point to a temporary
+    socket, and X connections made to this socket are forwarded
+    over the Telnet session back to the local system.  When used in
+    conjunction with either TLS session security or classic Telnet
+    encryption, the tunneling protocol rides on top of the existing
+    secure Telnet session.
+      I-D: draft-altman-telnet-fwdx-02.txt (FORWARD_X)
+
+    Much of the code for START_TLS and FORWARD_X was contributed by
+    Peter Runestig <peter@runestig.com> and Jeffrey Altman
+    <jaltman@columbia.edu>.
+
+  Telnet continues to support existing security options, which are
+  already widely deployed in a variety of commerical and non-commercial
+  products:
+
+  - Classic Telnet authentication:  SRP, Kerberos V4/V5, SPX, RSA
+      RFC: 2941 (AUTHENTICATION)
+      RFC: 2942 (Kerberos V5)
+      RFC: 2944 (SRP)
+
+  - Classic Telnet encryption:  Triple-DES, DES, CAST-128, 40-bit CAST
+      RFC: 2946 (ENCRYPT)
+      RFC: 2947 (DES3_CFB64)
+      RFC: 2948 (DES3_OFB64)
+      RFC: 2949 (CAST128_OFB64)
+      RFC: 2950 (CAST128_CFB64)
+      RFC: 2952 (DES_CFB64)
+      RFC: 2953 (DES_OFB64)
+
+Since TSXtelnet implements its security features and X11 forwarding as
+parts of the Telnet standard, it will always tunnel properly through
+firewalls and other network devices accustomed to Telnet traffic,
+taking its securely authenticated and encrypted session data and
+forwarded X11 traffic with it.
+
+This is *not* your grandpa's Telnet.  :-)
+
+
+Using TSXtelnet
+--------------------
+
+If you build Telnet with SSL/TLS support, you now have access to
+a number of useful client-side Telnet commands that control the
+behavior of Telnet's SSL/TLS transport security layer.  These are
+run through Telnet's command interface, which is entered by
+entering the Telnet escape character, usually '^]'.
+
+Most of the new commands are under the 'tls' top-level command:
+
+  telnet> tls ?
+  enable          Enable TLS session negotiation
+  disable         Disable TLS session negotiation
+  protocol        Set the SSL/TLS protocol version to negotiate
+  status          Display current status of authentication information
+  cipher          Set the cipher list used in TLS negotiation
+  list            List the ciphers supported by the current TLS configuration
+  ?               Print help information
+
+  'tls enable' and 'tls disable' enable and disable TLS negotiation,
+  respectively.  These only take effect when used before a session is
+  established.
+
+  'tls protocol <proto>' forces Telnet to negotiate a particular
+  version of SSL/TLS.  This is useful when the client and server
+  have trouble autonegotiating this.  Supported values for
+  <proto> are 'SSLv3' and 'TLSv1'.
+
+  'tls status' shows whether or not a SSL/TLS session is active and,
+  if it is, displays useful information about the server's certificate
+  (if any), the ciphersuite currently in use, and whether or not the
+  SSL/TLS session parameters have been independently verified.
+
+  'tls cipher' sets the list of ciphersuites the client will attempt
+  to negotiate with the server.  This only takes effect when used
+  before a session is established.  For instructions on constructing
+  a valid ciphersuite list, see below, or use the the 'tls list'
+  command.
+
+  'tls list' shows a full list of the ciphersuites that the client
+  will present to the server during negotiation.  This is useful for
+  seeing what ciphersuites the client and server have in common
+  (during a session) or seeing what effect the 'tls cipher' command
+  had (before a session).
+
+There is also one useful flag that can be set under Telnet:
+
+  telnet> set tlsdebug
+
+  This turns on socket-level debugging for the SSL/TLS layer.
+  Try turning this on before a session to see the details of the
+  negotiation.  This is the only way to see raw network data
+  when SSL is active, because the traditional 'set netdata'
+  option dumps data at a higher layer in the stack.  Those who
+  are familiar with the '-debug' flag of OpenSSL will find this
+  output familiar.
+
+
+[The following is the original README for START_TLS Telnet,
+ courtesy of Peter Runestig (peter@runestig.com)]
+
+START_TLS and FORWARD_X patch for GNU inetutils-1.3.2 together with
+OpenSSL >= 0.9.4
+(c) Peter 'Luna' Runestig <peter@runestig.com> 1999, 2000
+Interoperability testing by Jeffrey Altman <jaltman@columbia.edu>
+The verify_crl() function by Ralf S. Engelschall <rse@engelschall.com>
+This product includes software developed by the OpenSSL Project
+for use in the OpenSSL Toolkit. (http://www.openssl.org/)
+This product includes cryptographic software written by
+Eric Young (eay@cryptsoft.com)
+
+START_TLS spec:
+http://www.ietf.org/internet-drafts/draft-ietf-tn3270e-telnet-tls-04.txt
+FORWARD_X spec:
+http://www.ietf.org/internet-drafts/draft-altman-telnet-fwdx-02.txt
+
+Patching:
+	$ tar xzf inetutils-1.3.2.tar.gz
+	$ cd inetutils-1.3.2
+	$ patch -p1 < ../start_tls-telnet.current.patch
+
+	Or just download and untar the pre-patched tarball.
+
+Configuring:
+	Before compiling, the software package must be configured by running the
+	"configure" shell script in the root of the source tree:
+	$ ./configure [--with-openssl-dir=DIR]
+
+	If your host system doesn't have the 127.0.0.1 ip loop back address, you
+	want to do:
+	$ ./configure --disable-fwdx_loopback
+
+	If your host system supports unix domain sockets, and it's X client
+	libraries also support it, you might want to do:
+	$ ./configure --enable-fwdx_unix_sock
+
+	If you don't want the FORWARD_X support at all:
+	$ ./configure --disable-forward_x
+
+	To see all of the available "configure" options:
+	$ ./configure --help
+	
+Building:
+	$ make
+
+Install:
+	$ make install
+
+X509 client authentication in telnetd
+-------------------------------------
+Support for user authentication is possible through the custom function
+int x509_to_user(X509 *peer_cert, char *userid, int len) in the file
+src/x509_to_user.c, and by a .tlslogin file in the user's home directory.
+
+o  tls_userid_from_client_cert() is called and returns a user id or NULL.
+   tls_userid_from_client_cert() calls the site specific function
+   x509_to_user().
+
+o  If the environment variable $USER (set by the telnet client by the means of
+   standard telnet options) is _not_ set or equals the user id mapped from the
+   client cert, the user $USER is logged right in.
+
+o  If $USER is set and differ from the user id mapped from the client cert the
+   function tls_is_user_valid() is called to check $USER's ~/.tlslogin file.
+   That file, if it exist, contains one or more X509 certificates in PEM for-
+   mat. If the client cert is present in the file, the user $USER is logged
+   right in.
+
+o  If tls_userid_from_client_cert() can't map a user id from the client cert,
+   but the $USER env var is set, tls_is_user_valid() is called to check $USER's
+   ~/.tlslogin file. If the client cert is present in the file, the user $USER
+   is logged right in.
+
+o  In all other cases, a standard login prompt is presented.
+
+The telnetd server tries to use these files by default:
+telnetd-rsa.pem		RSA certificate, may include private key
+telnetd-rsa-key.pem	RSA private key
+telnetd-dsa.pem		DSA certificate, may include private key
+telnetd-dh-key.pem	DH private key
+telnetd-crl.pem		Certificate Revokation List
+telnetd-dhparam.pem	DH Parameters (a set of DH params is compiled in)
+
+These files is searched for in the following directorys (in this order):
+* Current working directory of the process.
+* Specified by the `X509_get_default_cert_dir_env()` environment variable
+  (usually $SSL_CERT_DIR).
+* `X509_get_default_cert_dir()`, usually (openssl-dir)/certs.
+* `X509_get_default_private_dir()`, usually (openssl-dir/private.
+
+Default CRL directory for the telnetd server is (openssl-dir)/crl.
+
+Hash symlinks for certs: ln -s cert.pem `openssl x509 -hash -noout -in cert.pem`.0
+Hash symlinks for CRLs:  ln -s crl.pem `openssl crl -hash -noout -in crl.pem`.r0
+
+How to put together a  'cipher list string':
+  Key Exchange Algorithms:
+    "kRSA"      RSA key exchange
+    "kDHr"      Diffie-Hellman key exchange (key from RSA cert)
+    "kDHd"      Diffie-Hellman key exchange (key from DSA cert)
+    "kEDH'      Ephemeral Diffie-Hellman key exchange (temporary key)
+
+  Authentication Algorithm:
+    "aNULL"     No authentication
+    "aRSA"      RSA authentication
+    "aDSS"      DSS authentication
+    "aDH"       Diffie-Hellman authentication
+
+  Cipher Encoding Algorithm:
+    "eNULL"     No encodiing
+    "DES"       DES encoding
+    "3DES"      Triple DES encoding
+    "RC4"       RC4 encoding
+    "RC2"       RC2 encoding
+    "IDEA"      IDEA encoding
+
+  MAC Digest Algorithm:
+    "MD5"       MD5 hash function
+    "SHA1"      SHA1 hash function
+    "SHA"       SHA hash function (should not be used)
+
+  Aliases:
+    "ALL"       all ciphers
+    "SSLv2"     all SSL version 2.0 ciphers (should not be used)
+    "SSLv3"     all SSL version 3.0 ciphers
+    "EXP"       all export ciphers (40-bit)
+    "EXPORT56"  all export ciphers (56-bit)
+    "LOW"       all low strength ciphers (no export)
+    "MEDIUM"    all ciphers with 128-bit encryption
+    "HIGH"      all ciphers using greater than 128-bit encryption
+    "RSA"       all ciphers using RSA key exchange
+    "DH"        all ciphers using Diffie-Hellman key exchange
+    "EDH"       all ciphers using Ephemeral Diffie-Hellman key exchange
+    "ADH"       all ciphers using Anonymous Diffie-Hellman key exchange
+    "DSS"       all ciphers using DSS authentication
+    "NULL"      all ciphers using no encryption
+
+Each item in the list may include a prefix modifier:
+
+    "+"         move cipher(s) to the current location in the list
+    "-"         remove cipher(s) from the list (may be added again by
+                a subsequent list entry)
+    "!"         kill cipher from the list (it may not be added again
+                by a subsequent list entry)
+
+If no modifier is specified the entry is added to the list at the current 
+position.  "+" may also be used to combine tags to specify entries such as 
+"RSA+RC4" describes all ciphers that use both RSA and RC4.
+
+For example, all available ciphers not including ADH key exchange:
+
+  ALL:!ADH:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP
+
+All algorithms including ADH and export but excluding patented algorithms: 
+
+  HIGH:MEDIUM:LOW:EXPORT56:EXP:ADH:!kRSA:!aRSA:!RC4:!RC2:!IDEA
+
+The OpenSSL command 
+
+  openssl ciphers -v <list of ciphers> 
+
+may be used to list all of the ciphers and the order described by a specific
+<list of ciphers>.

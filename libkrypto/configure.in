@@ -1,0 +1,229 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(krypto.c)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(libkrypto, 2.0)
+
+test "$CFLAGS" = "" && CFLAGS="-O"
+
+dnl Checks for programs.
+
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_RANLIB
+AC_ARG_PROGRAM
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h sys/time.h sys/types.h)
+
+dnl Checks for typedefs, structures and compiler characteristics.
+
+AC_C_CONST
+AC_HEADER_TIME
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_C_BIGENDIAN
+
+dnl Checks for library functions.
+
+dnl AC_FUNC_MEMCMP
+AC_HAVE_FUNCS(srand48 srand srandom getpid)
+
+dnl Some defines for now
+
+AC_ARG_ENABLE(noencryption, [  --enable-noencryption   disable encryption], AC_DEFINE(NOENCRYPTION))
+
+dnl User options
+
+AC_ARG_WITH(openssl, [  --with-openssl=DIR	    compile to use OpenSSL ], OPENSSLDIR=$withval, with_openssl=no)
+AC_ARG_WITH(cryptolib, [  --with-cryptolib=DIR	    compile to use cryptolib ], CRYPTOLIBDIR=$withval, with_cryptolib=no)
+AC_ARG_WITH(gmp, [  --with-gmp=DIR	    compile to use GNU MP ], GMPDIR=$withval, with_gmp=no)
+AC_ARG_WITH(gcrypt, [  --with-gcrypt=DIR    compile to use libgcrypt ], GCRYPTDIR=$withval, with_gcrypt=no)
+AC_ARG_WITH(mpi, [  --with-mpi=DIR	    compile to use MPI ], MPIDIR=$withval, with_mpi=no)
+AC_ARG_WITH(tomcrypt, [  --with-tomcrypt=DIR compile to use libtomcrypt ], TOMCRYPTDIR=$withval, with_tomcrypt=no)
+AC_ARG_WITH(tommath, [  --with-tommath=DIR  compile to use libtommath ], TOMMATHDIR=$withval, with_tommath=no)
+if test "$with_gmp" != "no"
+then
+	AC_DEFINE(GNU_MP)
+	LIBS="-lgmp $LIBS"
+	if test "$GMPDIR" != "yes"; then
+		LIBS="-L$GMPDIR/.libs -L$GMPDIR $LIBS"
+		CPPFLAGS="-I$GMPDIR $CPPFLAGS"
+	fi
+elif test "$with_gcrypt" != "no"
+then
+	AC_DEFINE(GCRYPT)
+	LIBS="-lgcrypt $LIBS"
+	if test "$GCRYPTDIR" != "yes"; then
+		LIBS="-L$GCRYPTDIR/src/.libs -L$GCRYPTDIR $LIBS"
+		CPPFLAGS="-I$GCRYPTDIR $CPPFLAGS"
+	fi
+elif test "$with_mpi" != "no"
+then
+	AC_DEFINE(MPI)
+	LIBS="-lmpi $LIBS"
+	if test "$MPIDIR" != "yes"; then
+		LIBS="-L$MPIDIR $LIBS"
+		CPPFLAGS="-I$MPIDIR $CPPFLAGS"
+	fi
+elif test "$with_tomcrypt" != "no"
+then
+	AC_DEFINE(TOMCRYPT)
+	AC_DEFINE(TOMMATH)
+	LIBS="-ltomcrypt $LIBS"
+	if test "$TOMCRYPTDIR" != "yes"; then
+		LIBS="-L$TOMCRYPTDIR $LIBS"
+		CPPFLAGS="-I$TOMCRYPTDIR/src/headers $CPPFLAGS"
+	fi
+elif test "$with_tommath" != "no"
+then
+	AC_DEFINE(TOMMATH)
+	LIBS="-ltommath $LIBS"
+	if test "$TOMMATHDIR" != "yes"; then
+		LIBS="-L$TOMMATHDIR $LIBS"
+		CPPFLAGS="-I$TOMMATHDIR $CPPFLAGS"
+	fi
+elif test "$with_cryptolib" != "no"
+then
+	AC_DEFINE(CRYPTOLIB)
+	LIBS="-lcrypt $LIBS"
+	if test "$CRYPTOLIBDIR" != "yes"; then
+		LIBS="-L$CRYPTOLIBDIR/cryptolib/lib $LIBS"
+		CPPFLAGS="-I$CRYPTOLIBDIR/cryptolib/include $CPPFLAGS"
+	fi
+else
+	if test "$with_openssl" = "no"; then
+		with_openssl="yes"
+		OPENSSLDIR="yes"
+	fi
+	AC_DEFINE(OPENSSL)
+	LIBS="-lcrypto $LIBS"
+	if test "$OPENSSLDIR" != "yes"; then
+		LIBS="-L$OPENSSLDIR/lib -L$OPENSSLDIR $LIBS"
+		CPPFLAGS="-I$OPENSSLDIR/include $CPPFLAGS"
+	fi
+fi
+
+AC_ARG_WITH(krb5, [  --with-krb5=DIR         use kerberos5 distribution in DIR (if given)])
+AC_ARG_WITH(krb4, [  --with-krb4=DIR	  use kerberos4 distribution in DIR (if given)])
+if test "$with_krb4" = "yes"
+then
+	if test -z "$with_des"
+	then
+		with_des=yes
+	fi
+fi
+if test -n "$with_krb5" -a "$with_krb5" != "no"
+then
+	if test "$with_krb5" != "yes"
+	then
+		CPPFLAGS="$CPPFLAGS -I$with_krb5/include -I$with_krb5/include/kerberosIV"
+		LIBS="-L$with_krb5/lib $LIBS"
+	fi
+	if test -z "$with_des"
+	then
+		with_des=yes
+	fi
+fi
+
+dnl Encryption/hashing options
+
+dnl Encryption options.
+
+AC_ARG_WITH(cast, [  --with-cast             compile with CAST5 (RFC 2144) encryption support])
+AC_ARG_WITH(des, [  --with-des=DIR          compile with DES encryption support (look in DIR if given)])
+
+if test "$with_cast" != "no" -a "$enable_noencryption" != "yes"
+then
+	if test -z "$with_cast"
+	then
+		if test "$with_openssl" != "no" -o "$with_tomcrypt" != "no"
+		then
+			with_cast="yes"
+		else
+			with_cast="no"
+		fi
+	fi
+	if test "$with_cast" = "yes"
+	then
+		AC_DEFINE(CIPHER_CAST5)
+		if test "$with_openssl" != "no"
+		then
+			AC_DEFINE(OPENSSL_CAST)
+		elif test "$with_tomcrypt" != "no"
+		then
+			AC_DEFINE(TOMCRYPT_CAST)
+		fi
+	fi
+fi
+
+if test "$with_openssl" != "no"
+then
+	AC_DEFINE(CIPHER_BLOWFISH)
+	AC_DEFINE(OPENSSL_BLOWFISH)
+fi
+
+if test "$with_des" != "no" -a "$enable_noencryption" != "yes"
+then
+	if test -z "$with_des"
+	then
+		if test "$with_openssl" != "no" -o "$with_cryptolib" != "no"
+		then
+			with_des="yes"
+		else
+			with_des="no"
+		fi
+	fi
+	if test "$with_des" = "yes"
+	then
+		AC_DEFINE(CIPHER_DES)
+		if test "$with_openssl" != "no"
+		then
+			AC_DEFINE(OPENSSL_DES)
+		elif test "$with_cryptolib" != "no"
+		then
+			AC_DEFINE(CRYPTOLIB_DES)
+		elif test -n "$with_krb5" -a "$with_krb5" != "no"
+		then
+			dnl AC_DEFINE(DESLIB4)
+			LIBS="$LIBS -ldes425 -lk5crypto"
+		elif test -n "$with_krb4" -a "$with_krb4" != "no"
+		then
+			dnl AC_DEFINE(DESLIB4)
+			LIBS="$LIBS -ldes"
+		else
+			LIBS="$LIBS -ldes"
+		fi
+	elif test "$with_des" != "no"
+	then
+		AC_DEFINE(CIPHER_DES)
+		LIBS="$LIBS -L$with_des -ldes"
+		CPPFLAGS="-I$with_des $CPPFLAGS"
+	fi
+fi
+
+if test "$with_openssl" != "no"
+then
+	AC_DEFINE(HASH_MD5)
+	AC_DEFINE(OPENSSL_MD5)
+elif test "$with_tomcrypt" != "no"
+then
+	AC_DEFINE(HASH_MD5)
+	AC_DEFINE(TOMCRYPT_MD5)
+elif test "$with_cryptolib" != "no"
+then
+	AC_DEFINE(HASH_MD5)
+	AC_DEFINE(CRYPTOLIB_MD5)
+fi
+
+AC_DEFINE(HASH_SHA)
+# AC_DEFINE(CIPHER_IDEA)
+# AC_DEFINE(CIPHER_ARCFOUR)
+
+AC_OUTPUT(Makefile)

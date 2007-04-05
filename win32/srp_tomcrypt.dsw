@@ -1,0 +1,170 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "cipher_bench"=".\libkrypto_tomcrypt\cipher_bench.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name krypto
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "cipher_test"=".\libkrypto_tomcrypt\cipher_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name krypto
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "krypto"=".\libkrypto_tomcrypt\krypto.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "krypto_test"=".\libkrypto_tomcrypt\krypto_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name krypto
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "kryptostatic"=".\libkrypto_tomcrypt\kryptostatic.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "srp"=".\libsrp_tomcrypt\srp.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "srp6bench"=".\libsrp_tomcrypt\srp6bench.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "srpbench"=".\libsrp_tomcrypt\srpbench.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "srpstatic"=".\libsrp_tomcrypt\srpstatic.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "srptest"=".\libsrp_tomcrypt\srptest.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tconf"=".\libsrp_tomcrypt\tconf.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

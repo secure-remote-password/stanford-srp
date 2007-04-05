@@ -1,0 +1,55 @@
+			LIBKRYPTO README
+
+
+Libkrypto is a generic interface to stream and block ciphers and one-way
+hash functions.  In addition the library contains routines which
+implement a protocol for sending and receiving "private" encrypted
+messages and "safe" messages which contain a message authentication
+code (MAC).
+
+The library currently supports BLOWFISH, DES, DES3, and CAST5 ciphers,
+ECB, CBC, CFB64 and OFB64 modes, and MD5 and SHA hash functions.
+
+The following is a brief description of the format of "private" and
+"safe" messages.  For the formats, all numbers are sent big endian,
+numbers in parenthesis indicate lengths.
+
+SAFE FORMAT
+
+pvno (4)
+msg-type (4)
+safe-body
+  length (4)
+  user-data (var)
+  sequence-number (4)
+checksum (var)
+
+
+PRIVATE FORMAT
+
+pvno (4)
+msg-type (4)
+enc-body
+  confounder (8)
+  checksum (var)
+  length (4)
+  user-data (var)
+  sequence-number (4)
+  pad (var)
+
+The implementations in libkrypto are based on the following distributions.
+The cipher mode code (cipher_crypt_cbc, cipher_crypt_cfb,
+cipher_crypt_ecb, cipher_crypt_ofb) and the Blowfish code
+(cipher_imp_blowfish) are based on Eric Young's Blowfish distribution
+and are copyrighted by Eric Young.  The DES code (cipher_imp_des)
+is based on Eric Young's DES distribution and is copyrighted by Eric Young.
+The IDEA code (cipher_imp_idea) is based on the source code in Bruce
+Schneier's Applied Cryptography, 2nd ed.  The SHA code (hash_imp_sha)
+and the random confounder code are based on the libcrypto routines in the
+Kerberos 5 patch level 1 distribution (krb5-1.0pl1) and are copyrighted by
+MIT.  The MD5 code (hash_imp_md5) was written by Colin Plumb.
+
+Update:  As of version 1.7.1 libkrypto has been largely reworked to
+function as a wrapper around cipher and hash implementations in
+underlying cryptography libraries, like OpenSSL, cryptolib, and libdes.
+libkrypto no longer contains native implementations of its own.

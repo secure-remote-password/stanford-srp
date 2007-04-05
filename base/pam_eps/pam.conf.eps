@@ -1,0 +1,90 @@
+# The default behavior for services not explicitly listed here:
+OTHER   auth     required       /lib/security/pam_deny.so
+OTHER   account  required       /lib/security/pam_deny.so
+OTHER   password required       /lib/security/pam_deny.so
+OTHER   session  required       /lib/security/pam_deny.so
+
+# The default behavior copied when ADDING NEW SERVICES which
+# do not have special requirements (like checking rhosts files):
+DEFAULT   auth     required       /lib/security/pam_eps_auth.so
+DEFAULT   account  required       /lib/security/pam_unix_acct.so
+# Do not add more than one password entry unless you know what you
+# are doing!
+DEFAULT   password required       /lib/security/pam_eps_passwd.so
+DEFAULT   session  required       /lib/security/pam_unix_session.so
+
+# rexec authorization
+rexec	auth       required	/lib/security/pam_securetty.so	
+rexec	auth       required	/lib/security/pam_eps_auth.so	
+rexec	auth       required	/lib/security/pam_nologin.so	
+rexec	account    required	/lib/security/pam_unix_acct.so	
+
+# rlogin authorization
+rlogin	auth       required	/lib/security/pam_securetty.so	
+rlogin	auth       required	/lib/security/pam_nologin.so	
+rlogin	auth       sufficient	/lib/security/pam_rhosts_auth.so	
+rlogin	auth       required	/lib/security/pam_eps_auth.so	
+rlogin	account    required	/lib/security/pam_unix_acct.so	
+rlogin	password   required	/lib/security/pam_eps_passwd.so	
+rlogin	session    required	/lib/security/pam_unix_session.so	
+
+# rsh authorization
+rsh	auth       required	/lib/security/pam_securetty.so	
+rsh	auth       required	/lib/security/pam_rhosts_auth.so	
+rsh	auth       required	/lib/security/pam_nologin.so	
+rsh	account    required	/lib/security/pam_unix_acct.so	
+rsh	session    required	/lib/security/pam_unix_session.so	
+
+# xdm authorization
+xdm	auth       required	/lib/security/pam_eps_auth.so	
+xdm	account    required	/lib/security/pam_unix_acct.so	
+
+# imap authorization
+imap	auth       required	/lib/security/pam_eps_auth.so	
+imap	account    required	/lib/security/pam_unix_acct.so	
+
+# passwd authorization
+passwd	auth       required	/lib/security/pam_eps_auth.so	
+passwd	account    required	/lib/security/pam_unix_acct.so	
+passwd	password   required	/lib/security/pam_eps_passwd.so	
+
+# samba authorization
+samba	auth       required	/lib/security/pam_eps_auth.so	
+samba	account    required	/lib/security/pam_unix_acct.so	
+
+# su authorization
+su	auth       required	/lib/security/pam_eps_auth.so	
+su	account    required	/lib/security/pam_unix_acct.so	
+su	password   required	/lib/security/pam_eps_passwd.so	
+su	session    required	/lib/security/pam_unix_session.so	
+
+# login authorization
+login	auth       required	/lib/security/pam_securetty.so	
+login	auth       required	/lib/security/pam_eps_auth.so	
+login	auth       required	/lib/security/pam_nologin.so	
+login	account    required	/lib/security/pam_unix_acct.so	
+login	password   required	/lib/security/pam_eps_passwd.so	
+login	session    required	/lib/security/pam_unix_session.so	
+
+# chsh authorization
+chsh	auth       required	/lib/security/pam_eps_auth.so	
+chsh	account    required	/lib/security/pam_unix_acct.so	
+chsh	password   required	/lib/security/pam_eps_passwd.so	
+chsh	session    required	/lib/security/pam_unix_session.so	
+
+# chfn authorization
+chfn	auth       required	/lib/security/pam_eps_auth.so	
+chfn	account    required	/lib/security/pam_unix_acct.so	
+chfn	password   required	/lib/security/pam_eps_passwd.so	
+chfn	session    required	/lib/security/pam_unix_session.so	
+
+# ftp authorization
+ftp	auth       required	/lib/security/pam_listfile.so	item=user sense=deny file=/etc/ftpusers onerr=succeed
+ftp	auth       required	/lib/security/pam_eps_auth.so	
+ftp	auth       required	/lib/security/pam_shells.so	
+ftp	account    required	/lib/security/pam_unix_acct.so	
+ftp	session    required	/lib/security/pam_unix_session.so	
+
+# xlock authorization
+xlock	auth       required	/lib/security/pam_eps_auth.so	
+

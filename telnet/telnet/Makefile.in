@@ -1,0 +1,322 @@
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+CC = @CC@
+MAKEINFO = @MAKEINFO@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+TLS_SFC_DIR = @TLS_SFC_DIR@
+VERSION = @VERSION@
+
+AUTOMAKE_OPTIONS = foreign
+
+ubindir = ${prefix}/bin
+
+noinst_HEADERS = defines.h externs.h fdset.h general.h ring.h types.h Xauth.h fwdxutil.h tlsutil.h
+
+ubin_PROGRAMS = telnet
+
+telnet_SOURCES = authenc.c commands.c main.c network.c ring.c sys_bsd.c  telnet.c terminal.c tn3270.c utilities.c Xauth.c XdmAuth.c fwdxutil.c parsedpy.c tlsutil.c
+
+
+telnet_LDADD = ../libtelnet/libtelnet.a
+
+INCLUDES = 
+
+EXTRA_DIST = Makefile.generic Makefile.unix Makefile.4.4  telnet.0.ps telnet.0.txt telnet.1
+
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+PROGRAMS =  $(ubin_PROGRAMS)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+telnet_OBJECTS =  authenc.o commands.o main.o network.o ring.o sys_bsd.o \
+telnet.o terminal.o tn3270.o utilities.o Xauth.o XdmAuth.o fwdxutil.o \
+parsedpy.o tlsutil.o
+telnet_DEPENDENCIES =  ../libtelnet/libtelnet.a
+telnet_LDFLAGS = 
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+SOURCES = $(telnet_SOURCES)
+OBJECTS = $(telnet_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign --include-deps telnet/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-ubinPROGRAMS:
+
+clean-ubinPROGRAMS:
+	-test -z "$(ubin_PROGRAMS)" || rm -f $(ubin_PROGRAMS)
+
+distclean-ubinPROGRAMS:
+
+maintainer-clean-ubinPROGRAMS:
+
+install-ubinPROGRAMS: $(ubin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(ubindir)
+	@list='$(ubin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(ubindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(ubindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-ubinPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(ubin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(ubindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+telnet: $(telnet_OBJECTS) $(telnet_DEPENDENCIES)
+	@rm -f telnet
+	$(LINK) $(telnet_LDFLAGS) $(telnet_OBJECTS) $(telnet_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = telnet
+
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+authenc.o: authenc.c ../config.h ../arpa/telnet.h ../libtelnet/encrypt.h \
+	../libtelnet/enc-proto.h ../libtelnet/misc.h \
+	../libtelnet/misc-proto.h general.h ring.h externs.h defines.h \
+	types.h
+commands.o: commands.c ../config.h ../libtelnet/auth.h \
+	../libtelnet/auth-proto.h ../arpa/telnet.h general.h ring.h \
+	externs.h defines.h types.h tlsutil.h fwdxutil.h
+fwdxutil.o: fwdxutil.c ../config.h ../arpa/telnet.h ring.h defines.h \
+	externs.h fwdxutil.h Xauth.h tlsutil.h
+main.o: main.c ../config.h ../libtelnet/auth.h ../libtelnet/auth-proto.h \
+	ring.h externs.h defines.h
+network.o: network.c ../config.h ../arpa/telnet.h ring.h defines.h \
+	externs.h fdset.h tlsutil.h
+parsedpy.o: parsedpy.c ../config.h Xauth.h
+ring.o: ring.c ../config.h ring.h general.h
+sys_bsd.o: sys_bsd.c ../config.h ../arpa/telnet.h ring.h fdset.h \
+	defines.h externs.h types.h tlsutil.h fwdxutil.h
+telnet.o: telnet.c ../config.h ../arpa/telnet.h ring.h defines.h \
+	externs.h types.h general.h tlsutil.h fwdxutil.h
+terminal.o: terminal.c ../config.h ../arpa/telnet.h ring.h externs.h \
+	types.h
+tlsutil.o: tlsutil.c ../config.h ring.h externs.h
+tn3270.o: tn3270.c ../config.h ../arpa/telnet.h general.h defines.h \
+	ring.h externs.h fdset.h
+utilities.o: utilities.c ../config.h ../arpa/telnet.h general.h fdset.h \
+	ring.h defines.h externs.h tlsutil.h fwdxutil.h
+Xauth.o: Xauth.c ../config.h Xauth.h
+XdmAuth.o: XdmAuth.c ../config.h
+
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
+
+install-data-am: install-ubinPROGRAMS
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-ubinPROGRAMS
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS) $(HEADERS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(ubindir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-ubinPROGRAMS mostlyclean-compile \
+		mostlyclean-tags mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-ubinPROGRAMS clean-compile clean-tags clean-generic \
+		mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-ubinPROGRAMS distclean-compile distclean-tags \
+		distclean-generic clean-am
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-ubinPROGRAMS \
+		maintainer-clean-compile maintainer-clean-tags \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-ubinPROGRAMS distclean-ubinPROGRAMS \
+clean-ubinPROGRAMS maintainer-clean-ubinPROGRAMS uninstall-ubinPROGRAMS \
+install-ubinPROGRAMS mostlyclean-compile distclean-compile \
+clean-compile maintainer-clean-compile tags mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

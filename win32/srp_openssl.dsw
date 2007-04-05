@@ -1,0 +1,170 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "cipher_bench"=".\libkrypto_openssl\cipher_bench.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name krypto
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "cipher_test"=".\libkrypto_openssl\cipher_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name krypto
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "krypto"=".\libkrypto_openssl\krypto.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "krypto_test"=".\libkrypto_openssl\krypto_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name krypto
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "kryptostatic"=".\libkrypto_openssl\kryptostatic.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "srp"=".\libsrp_openssl\srp.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "srp6bench"=".\libsrp_openssl\srp6bench.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "srpbench"=".\libsrp_openssl\srpbench.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "srpstatic"=".\libsrp_openssl\srpstatic.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "srptest"=".\libsrp_openssl\srptest.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tconf"=".\libsrp_openssl\tconf.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name srp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

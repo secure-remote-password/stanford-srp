@@ -1,0 +1,89 @@
+Installing the Exponential Password Suite on UNIX systems
+=========================================================
+
+If you obtained the EPS as a binary distribution, unpack the
+archive in a temporary directory.  If you are compiling from source,
+this directory should have links to the appropriate executables.
+
+This installation must be done as root.  Note that the SRP-enabled
+telnet and ftp require the EPS in order to perform secure
+authentication.
+
+MAKE SURE YOU READ THE TESTING SECTION AT THE END OF THIS DOCUMENT!!!
+
+
+INSTALLATION STEPS
+==================
+
+0.  For an automatic installation, run the "installeps" script
+    in this directory as root, e.g.
+
+      # ./installeps
+
+    You SHOULD make BACKUPS of your original programs (the installeps
+    script will make ".orig" backups automatically, but it pays to be
+    on the safe side).
+
+    If this does not succeed, or if you prefer to install by hand,
+    refer to the remaining instructions below.
+
+1.  BACKUP your original login, su and passwd programs.
+
+2.  Install the "passwd" utility.  Find out where "passwd" resides
+    on your system (usually /bin or /usr/bin), and replace it with
+    the EPS passwd, optionally saving a copy of the original:
+
+      # mv /bin/passwd /bin/passwd.orig
+      # cp passwd /bin
+      # chmod 4711 /bin/passwd
+
+    Like the original passwd, the EPS passwd needs to be setuid root.
+
+3.  Intall the "tconf" utility.  It is recommended that you place it
+    in the same directory as the "passwd" command:
+
+      # cp tconf /bin
+
+    It can also be placed in admin utility directories such as
+    /sbin or /usr/sbin.
+
+4.  Run "tconf".  It is recommended that you start off with a
+    1024-bit field size.  You should initially use the default
+    1024-bit field size in tconf ,since generating large fields can be
+    very time-consuming.  Once everything is installed and tested and
+    you have more time, you can run tconf again to generate your
+    own field.
+
+    You should also create a zero-length file /etc/tpasswd and set its
+    mode as desired:  either world-readable (0644) or shadowed (0600).
+
+5.  (Optional) Install the "login" and "su" utilities in the same way
+    that you installed "passwd".  Although your vendor's "login" and "su"
+    will still continue to work with the new EPS suite, installing the
+    new login and su programs reduces the number of programs that
+    depend on the old-style UNIX password format.
+
+Each user should now use the "passwd" command to update their passwords.
+
+
+TESTING
+=======
+
+IF YOU INSTALLED /bin/login MAKE SURE YOU TEST YOUR SYSTEM *BEFORE* LOGGING
+OUT.  You should perform the following steps:
+
+1. Try and telnet into your machine.
+
+2. Try and rlogin into your machine.
+
+3. Physically go to another computer and open a telnet session into
+   the console where you are installing EPS login (so you have access
+   to the machine if the following step does not work).  Logout of
+   the console and try to log in on the console.
+
+4. If any of the above steps failed, replace the EPS login with
+   your original login program (login is optional anyways).
+
+
+Tom Wu
+tjw@cs.Stanford.EDU

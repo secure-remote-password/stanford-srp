@@ -1,0 +1,57 @@
+The "telnet" code is derived from the October 23, 1995 MIT distribution
+and is copyrighted by MIT and the Regents of the University of California.
+Free use and distribution is permitted under their copyrights.
+
+START_TLS (SSL/TLS-based session security) and FORWARD_X (X11 session
+forwarding) support in SRP Telnet is derived from work done by
+Jeffrey Altman (jaltman@columbia.edu) and the Kermit Project,
+and Peter Runestig (peter@runestig.com).
+
+The GNU Multiple Precision Library, used by "libsrp" to perform large-
+number arithmetic, is distributed under the GNU Library Public License.
+
+The SHA-1 code used by libsrp was written by Steve Reid and is in the
+public domain.
+
+The CAST encryption algorithm was developed and patented by Carlisle Adams
+and Stafford Tavares.  The CAST-128 algorithm (otherwise known as CAST5)
+has been made available on a royalty-free basis for both commercial and
+non-commercial use.  I coded the implementation of CAST-128 myself based
+on the description given in RFC 2144; my implementation is free for
+commercial and non-commercial use.  (Update: My implementation is no
+longer bundled with the SRP distribution as of version 1.7.1, but is
+available by request.  See cast/README for details.)
+
+t_truerand.c contains code for generating high-entropy random seeds.
+This code was written by Don Mitchell and Matt Blaze, is copyrighted
+by AT&T, and has been made freely available.
+
+The "ftp" code is derived from the Kerberos 5 patch level 1 distribution
+(krb5-1.0pl1) of gssftp which was supplied by Cygnus Support for inclusion
+in the MIT Kerberos V5 release.  The code is copyrighted by MIT and the
+original BSD ftp implementation is copyrighted by the Regents of the
+University of California.
+
+The implementations in libkrypto are based on the following distributions.
+The cipher mode code (cipher_crypt_cbc, cipher_crypt_cfb,
+cipher_crypt_ecb, cipher_crypt_ofb) and the Blowfish code
+(cipher_imp_blowfish) are based on Eric Young's Blowfish distribution
+and are copyrighted by Eric Young.  The DES code (cipher_imp_des)
+is based on Eric Young's DES distribution and is copyrighted by Eric Young.
+The IDEA code (cipher_imp_idea) is based on the source code in Bruce
+Schneier's Applied Cryptography, 2nd ed.  The SHA code (hash_imp_sha)
+and the random confounder code are based on the libcrypto routines in the
+Kerberos 5 patch level 1 distribution (krb5-1.0pl1) and are copyrighted by
+MIT.  For the CAST code (cipher_imp_cast) and the MD5 code (hash_imp_md5)
+see above.  (Update: As of version 1.7.1, libkrypto has been replaced
+with stub wrappers to crypto library implementations of the corresponding
+ciphers.  The above attributions are no longer relevant.)
+
+The code for login, su and passwd are based on the Shadow Password Suite
+for Linux (shadow-970616).  The Linux Shadow Password Suite is based on
+the Shadow Suite by Julianne F. Haugh and is copyright (c) 1988-1997,
+Julianne F. Haugh and copyright (c) 1996, Marek Michalkiewicz.
+
+A special thanks goes to the legions of volunteers, past and present,
+who have contributed to the Project and whose continuing contributions
+to Open Source cryptography make this effort a success.

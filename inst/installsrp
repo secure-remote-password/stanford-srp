@@ -1,0 +1,64 @@
+#!/bin/sh
+
+DOBACKUP=yes
+: ${MV:=mv} ${CP:=cp}
+
+inpath() {
+  for dir in `echo "$PATH" | tr : " "`
+  do
+    if [ -x "$dir"/"$1" -a "$dir" != "." ]
+    then
+      echo "$dir"/"$1"
+      return
+    fi
+  done
+}
+
+doinst() {
+  echo "Location to install $1 [default $2]:"
+  read dest
+  if [ -z "$dest" ]
+  then
+    dest=$2
+  fi
+  case $DOBACKUP in
+  [yY]*)	$MV "$dest" "$dest".orig
+  esac
+  $CP "$1" "$dest"
+}
+
+installbin() {
+  source=$1
+  shift
+  for file
+  do
+    if [ -f "$file" ]
+    then
+      doinst "$source" "$file"
+      return
+    fi
+  done
+
+  echo "Warning: unable to find system location for $source"
+  doinst "$source" "$1"
+}
+
+if [ ! -f telnet -o ! -x telnet ]
+then
+	echo "Please run from the installation directory"
+	exit 1
+fi
+
+echo
+
+installbin telnet /bin/telnet /usr/bin/telnet /usr/ucb/telnet /usr/bsd/telnet /usr/local/bin/telnet `inpath telnet`
+
+installbin ftp /bin/ftp /usr/bin/ftp /usr/ucb/ftp /usr/bsd/ftp /usr/local/bin/ftp `inpath ftp`
+
+#FTPD=`grep "^ftp" /etc/inetd.conf | awk '{print $6}'`
+installbin ftpd /usr/sbin/in.ftpd /usr/sbin/ftpd /usr/sbin/wu.ftpd /usr/etc/in.ftpd /usr/etc/ftpd /usr/etc/wu.ftpd /usr/libexec/ftpd `inpath ftpd` `inpath in.ftpd` $FTPD
+
+#TELNETD=`grep "^telnet" /etc/inetd.conf | awk '{print $6}'`
+installbin telnetd /usr/sbin/in.telnetd /usr/sbin/telnetd /usr/etc/in.telnetd /usr/etc/telnetd /usr/libexec/telnetd `inpath telnetd` `inpath in.telnetd` $TELNETD
+
+echo Done.

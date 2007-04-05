@@ -1,0 +1,236 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(configure.in)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(srpftp, 1.1.1)
+AC_PROG_MAKE_SET
+
+dnl test "$prefix" = "NONE" && prefix="/usr"
+dnl test "$prefix" = "/usr" && exec_prefix=""
+test "$CFLAGS" = "" && CFLAGS="-O"
+
+dnl Checks for programs.
+
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_YACC
+AC_ARG_PROGRAM
+
+dnl Checks for libraries.
+
+AC_CHECK_LIB(socket, socket)
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(crypt,crypt)
+AC_CHECK_LIB(dl, dlopen)
+
+dnl Checks for header files.
+
+AC_HEADER_CHECK(termios.h,AC_FUNC_CHECK(cfsetispeed,AC_DEFINE(POSIX_TERMIOS)))
+AC_CHECK_HEADERS(stdarg.h stdlib.h string.h sys/select.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+AC_C_CONST
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+
+dnl Checks for library functions.
+
+AC_FUNC_VFORK
+AC_HAVE_FUNCS(getcwd getdtablesize)
+AC_REPLACE_FUNCS(getdtablesize)
+AC_HAVE_FUNCS(getcwd getusershell seteuid setreuid setresuid)
+
+dnl Other stuff from Kerberos
+
+dnl DECLARE_SYS_ERRLIST
+AC_TYPE_SIGNAL
+CHECK_SIGNALS
+CHECK_SIGPROCMASK
+CHECK_WAIT_TYPE
+CHECK_UTMP
+dnl AC_HEADER_STDARG
+
+AC_MSG_CHECKING([setenv])
+AC_CACHE_VAL(krb5_cv_setenv,
+[AC_TRY_LINK(
+[],[setenv("PATH","/bin",0);],
+krb5_cv_setenv=yes,krb5_cv_setenv=no)])
+AC_MSG_RESULT($krb5_cv_setenv)
+if test $krb5_cv_setenv = no; then
+AC_REPLACE_FUNCS(setenv)
+fi
+AC_MSG_CHECKING([shadow password support])
+AC_CACHE_VAL(krb5_cv_shadow_pwd,
+[AC_TRY_LINK(
+[#include <sys/types.h>
+#include <pwd.h>
+#include <shadow.h>],
+[struct spwd *sp = getspnam("root")],
+krb5_cv_shadow_pwd=yes, krb5_cv_shadow_pwd=no)])
+AC_MSG_RESULT($krb5_cv_shadow_pwd)
+if test $krb5_cv_shadow_pwd = yes; then
+AC_DEFINE(HAVE_SHADOW)
+fi
+
+dnl User options.
+
+AC_ARG_ENABLE(noencryption, [  --enable-noencryption	disable encryption], AC_DEFINE(NOENCRYPTION))
+AC_ARG_ENABLE(glob, [  --enable-glob            use glob(3) from libc], AC_DEFINE(USE_GLOB))
+
+AC_SUBST(LIBMATH)
+AC_ARG_WITH(openssl, [  --with-openssl=DIR	    compile to use OpenSSL ], OPENSSLDIR=$withval, with_openssl=no)
+AC_ARG_WITH(cryptolib, [  --with-cryptolib=DIR	    compile to use cryptolib ], CRYPTOLIBDIR=$withval, with_cryptolib=no)
+AC_ARG_WITH(gmp, [  --with-gmp=DIR	    compile to use GNU MP ], GMPDIR=$withval, with_gmp=no)
+AC_ARG_WITH(gcrypt, [  --with-gcrypt=DIR    compile to use libgcrypt ], GCRYPTDIR=$withval, with_gcrypt=no)
+AC_ARG_WITH(mpi, [  --with-mpi=DIR	    compile to use MPI ], MPIDIR=$withval, with_mpi=no)
+AC_ARG_WITH(tomcrypt, [  --with-tomcrypt=DIR compile to use libtomcrypt ], TOMCRYPTDIR=$withval, with_tomcrypt=no)
+AC_ARG_WITH(tommath, [  --with-tommath=DIR  compile to use libtommath ], TOMMATHDIR=$withval, with_tommath=no)
+if test "$with_gmp" != "no"
+then
+	AC_DEFINE(GNU_MP)
+	LIBS="-lgmp $LIBS"
+	if test "$GMPDIR" != "yes"; then
+		LIBS="-L$GMPDIR/.libs -L$GMPDIR $LIBS"
+		CPPFLAGS="-I$GMPDIR $CPPFLAGS"
+	fi
+elif test "$with_gcrypt" != "no"
+then
+	AC_DEFINE(GCRYPT)
+	LIBS="-lgcrypt $LIBS"
+	if test "$GCRYPTDIR" != "yes"; then
+		LIBS="-L$GCRYPTDIR/src/.libs -L$GCRYPTDIR $LIBS"
+		CPPFLAGS="-I$GCRYPTDIR $CPPFLAGS"
+	fi
+elif test "$with_mpi" != "no"
+then
+	AC_DEFINE(MPI)
+	LIBS="-lmpi $LIBS"
+	if test "$MPIDIR" != "yes"; then
+		LIBS="-L$MPIDIR $LIBS"
+		CPPFLAGS="-I$MPIDIR $CPPFLAGS"
+	fi
+elif test "$with_tomcrypt" != "no"
+then
+	AC_DEFINE(TOMCRYPT)
+	AC_DEFINE(TOMMATH)
+	LIBS="-ltomcrypt $LIBS"
+	if test "$TOMCRYPTDIR" != "yes"; then
+		LIBS="-L$TOMCRYPTDIR $LIBS"
+		CPPFLAGS="-I$TOMCRYPTDIR/src/headers $CPPFLAGS"
+	fi
+elif test "$with_tommath" != "no"
+then
+	AC_DEFINE(TOMMATH)
+	LIBS="-ltommath $LIBS"
+	if test "$TOMMATHDIR" != "yes"; then
+		LIBS="-L$TOMMATHDIR $LIBS"
+		CPPFLAGS="-I$TOMMATHDIR $CPPFLAGS"
+	fi
+elif test "$with_cryptolib" != "no"
+then
+	AC_DEFINE(CRYPTOLIB)
+	if test "$CRYPTOLIBDIR" != "yes"; then
+		LIBS="$CRYPTOLIBDIR/cryptolib/lib/libcrypt.a $LIBS"
+		CPPFLAGS="-I$CRYPTOLIBDIR/cryptolib/include $CPPFLAGS"
+	else
+		LIBS="-lcrypt $LIBS"
+	fi
+else
+	AC_DEFINE(OPENSSL)
+	LIBS="-lcrypto $LIBS"
+	if test -n "$OPENSSLDIR" -a "$OPENSSLDIR" != "yes"; then
+		LIBS="-L$OPENSSLDIR/lib -L$OPENSSLDIR $LIBS"
+		CPPFLAGS="-I$OPENSSLDIR/include $CPPFLAGS"
+	fi
+fi
+
+AC_ARG_WITH(srp, [  --with-srp              compile with SRP support])
+AC_ARG_WITH(krb5, [  --with-krb5=DIR         use kerberos5 distribution in DIR (if given)])
+AC_ARG_WITH(krb4, [  --with-krb4		  compile with kerberos4 support])
+AC_ARG_WITH(des, [  --with-des=DIR          compile with DES encryption support (look in DIR if given)])
+if test "$with_krb4" = "yes"
+then
+	AC_DEFINE(KERBEROS)
+	if test -n "$with_krb5" -a "$with_krb5" != "no"
+	then
+		LIBS="-lkrb4 -lkrb5 -lk5crypto -lcom_err -lresolv $LIBS"
+	else
+		LIBS="-lkrb -lcom_err $LIBS"
+	fi
+	if test -z "$with_des"
+	then
+		with_des=yes
+	fi
+fi
+if test -n "$with_krb5" -a "$with_krb5" != "no"
+then
+	if test "$with_krb5" != "yes"
+	then
+		CPPFLAGS="$CPPFLAGS -I$with_krb5/include -I$with_krb5/include/kerberosIV"
+		LIBS="-L$with_krb5/lib $LIBS"
+	fi
+	if test -z "$with_des"
+	then
+		with_des=yes
+	fi
+fi
+
+dnl Encryption libraries
+
+if test "$with_des" != "no" -a "$enable_noencryption" != "yes"
+then
+	if test -z "$with_des"
+	then
+		if test "$with_openssl" != "no" -o "$with_cryptolib" != "no"
+		then
+			with_des="yes"
+		else
+			with_des="no"
+		fi
+	fi
+	if test "$with_des" = "yes"
+	then
+		dnl AC_DEFINE(CIPHER_DES)
+		if test "$with_openssl" != "no"
+		then
+			dnl AC_DEFINE(OPENSSL_DES)
+			:
+		elif test "$with_cryptolib" != "no"
+		then
+			dnl AC_DEFINE(CRYPTOLIB_DES)
+			:
+		elif test -n "$with_krb5" -a "$with_krb5" != "no"
+		then
+			dnl AC_DEFINE(DESLIB4)
+			LIBS="$LIBS -ldes425"
+		elif test -n "$with_krb4" -a "$with_krb4" != "no"
+		then
+			dnl AC_DEFINE(DESLIB4)
+			LIBS="$LIBS -ldes"
+		else
+			dnl AC_DEFINE(DESLIB3)
+			LIBS="$LIBS -ldes"
+		fi
+	elif test "$with_des" != "no"
+	then
+		dnl AC_DEFINE(CIPHER_DES)
+		dnl AC_DEFINE(NEWDESLIB)
+		LIBS="$LIBS -L$with_des -ldes"
+		dnl CPPFLAGS="-I$with_des $CPPFLAGS"
+	fi
+fi
+
+if test "$with_srp" != "no"
+then
+	AC_DEFINE(SRP)
+	CPPFLAGS="$CPPFLAGS -I../../libsrp"
+	LIBS="-L../../libsrp -lsrp $LIBS"
+fi
+
+AC_DEFINE(FTP_BUFSIZ,10240)
+AC_DEFINE(FTPAUTH)
+AC_DEFINE(FTPAUTH_PATH, "/etc/ftpauth")
+
+AC_OUTPUT(Makefile arpa/Makefile ftp/Makefile ftpd/Makefile)

@@ -1,0 +1,93 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
+#undef NOENCRYPTION
+
+#undef GNU_MP
+
+#undef GCRYPT
+
+#undef MPI
+
+#undef TOMCRYPT
+
+#undef TOMMATH
+
+#undef CRYPTOLIB
+
+#undef OPENSSL
+
+#undef CIPHER_CAST5
+
+#undef OPENSSL_CAST
+
+#undef TOMCRYPT_CAST
+
+#undef CIPHER_BLOWFISH
+
+#undef OPENSSL_BLOWFISH
+
+#undef CIPHER_DES
+
+#undef OPENSSL_DES
+
+#undef CRYPTOLIB_DES
+
+#undef HASH_MD5
+
+#undef OPENSSL_MD5
+
+#undef TOMCRYPT_MD5
+
+#undef CRYPTOLIB_MD5
+
+#undef HASH_SHA
+
+/* The number of bytes in a int.  */
+#undef SIZEOF_INT
+
+/* The number of bytes in a long.  */
+#undef SIZEOF_LONG
+
+/* The number of bytes in a short.  */
+#undef SIZEOF_SHORT
+
+/* Define if you have the getpid function.  */
+#undef HAVE_GETPID
+
+/* Define if you have the srand function.  */
+#undef HAVE_SRAND
+
+/* Define if you have the srand48 function.  */
+#undef HAVE_SRAND48
+
+/* Define if you have the srandom function.  */
+#undef HAVE_SRANDOM
+
+/* Define if you have the <sys/time.h> header file.  */
+#undef HAVE_SYS_TIME_H
+
+/* Define if you have the <sys/types.h> header file.  */
+#undef HAVE_SYS_TYPES_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+

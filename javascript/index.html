@@ -1,0 +1,168 @@
+<html>
+<head>
+<title>SRP JavaScript Demo Index</title>
+</head>
+<h1>SRP JavaScript Demo</h1>
+<body bgcolor="#ffffff" text="#000000">
+This demo uses a combination of JavaScript and Java to
+demonstrate the mathematical steps behind the
+Secure Remote Password Protocol.
+<p align="center"><a href="demo.html"><b>Run the demo</b></a></p>
+<b>Quick start instructions:</b>
+Type the word <code>password</code> into the <font color="red">red</font>
+client password field, press TAB, and watch the status field at the bottom
+change to indicate successful authentication.
+<p><hr>
+<h2>Navigating the demo</h2>
+The demo is organized like a spreadsheet.
+Based on the values placed in certain input fields,
+the values of intermediate and output fields are calculated.
+Changes in either primary input fields or intermediate fields
+are propagated to dependent fields once the change is made.
+Usually this happens when you TAB out of the field or click
+somewhere else on the page.
+<p>
+Fields in <b>bold</b> are primary user-input fields.
+The username defaults to <code>user</code> and the
+server's password defaults to <code>password</code>.
+If the client's password is the same as the server's
+password, then the protocol ensures that the client
+and server sessions keys (<i>S</i>) match up, regardless
+of the values of the other inputs.
+<p>
+Fields in <i>italics</i> are dependent fields.
+Their values are calculated from other fields, so it is
+not recommended that they be changed manually.
+Doing so may make the values calculated by the demo
+inconsistent.
+<p>
+Fields in plain text are "automatic" input fields.
+In some cases, like the <i>N</i> and <i>g</i> parameters,
+these fields are normally picked from a predefined
+set of values.
+In other cases, the values of the fields are
+generated randomly.
+Although it is possible to enter values manually into
+these fields, the values may be overwritten by other
+controls on the page.
+<p>
+The "radix" radio button controls the base used to display
+numeric values.
+Changing this setting does not alter the actual values of
+any fields.
+<p>
+The SRP variant radio button selects the protocol in use.
+This affects the value of <i>k</i>, as well as the
+formula used to compute <i>u</i>.
+<p>
+<hr>
+<h2>Browser requirements</h2>
+This demo requires a browser that supports both JavaScript and Java.
+It needs access to the <code>java.math.BigInteger</code> class to do
+large number arithmetic.
+Some browsers (e.g. Netscape, Mozilla) allow JavaScript code to
+create Java objects directly through JavaScript, while others
+(e.g. Internet Explorer) require the assistance of a small "helper"
+Java applet to construct <code>BigInteger</code> objects.
+This requires that your browser support LiveConnect,
+a feature that allows applets to be called and controlled directly
+from JavaScript.
+<p>
+The SRP JavaScript demo has been tested successfully under
+the following browser environments:
+<ul>
+<li><a href="http://www.mozilla.org/"><b>Mozilla 1.x,</b></a>
+<a href="http://www.netscape.com/"><b>Netscape 6, 7</b></a>
+    <ul>
+    <li>Linux (NS7, Mozilla 1.1)
+    <li>MacOS X.1 (NS7)
+    <li>Windows 98 (NS6.2, NS7), Windows XP (NS7.02)
+    </ul>
+<li><b>Netscape 4.x</b> - JDK 1.1.5 w/bignum support required
+    <ul>
+    <li>Linux (NS4.78)
+    <li>Solaris 8 [SPARC] (NS4.7)
+    <li>Solaris 7 [x86] (NS4.51)
+    <li>AIX 4.3.3 (NS4.61)
+    <li>WindowsNT 4.0 (NS4.05)
+    </ul>
+<li><a href="http://www.microsoft.com/ie/"><b>Internet Explorer</b></a>
+    <ul>
+    <li>WindowsNT 4.0 (IE4)
+    <li>Windows 98 (IE5, IE6) [MS or Sun JVM]
+    <li>Windows XP (IE6) [Sun JVM 1.4.1_01 or _02 or MS JVM]
+    </ul>
+<li><a href="http://www.opera.com/"><b>Opera</b></a>
+    <ul>
+    <li>Linux (Opera6.1)
+    </ul>
+</ul>
+The SRP JavaScript demo does NOT work with the following:
+<ul>
+<li><b>Netscape 6.x</b>
+    <ul>
+    <li>MacOS 8.6 (NS6.2)
+    </ul>
+<li><b>Netscape 4.x</b>
+    <ul>
+    <li>MacOS 8.6 (NS4.73), MacOS 9 (NS4.7) - no bignum support in Java
+    </ul>
+<li><b>Internet Explorer</b>
+    <ul>
+    <li>Solaris 8 (IE5) - no LiveConnect
+    <li>MacOS 8.6 (IE5), MacOS X.1 (IE5.2) - no LiveConnect
+    <li>Windows XP (IE6) [Sun JVM 1.4.0_01 or _03] - crash, JVM upgrade needed (see above)
+    </ul>
+<li><b>Opera</b>
+    <ul>
+    <li>MacOS X.1 (Opera 6.0b2) - crash w/LiveConnect
+    <li>Solaris (Opera 5.0b1) - no Java
+    </ul>
+<li><b>Konqueror</b> - no LiveConnect
+<li><b>HotJava</b> - no JavaScript support
+<li><b>OmniWeb</b>
+</ul>
+If your browser and platform are not listed here, it means that
+they have not yet been tested.
+Please let me know how well this demo works on your browser,
+especially if it is an untested configuration.
+<p>
+To aid in testing, use the following LiveConnect test.
+This test instantiates an applet and attempts to access it
+using JavaScript.
+<p align="center">
+<script language="JavaScript">
+<!--
+function runtest() {
+  var t = document.applets["bigint"].newBigInteger("2", 10);
+  if(t.multiply(t).toString(10) == "4") {
+    alert('LiveConnect test succeeded');
+  }
+  else {
+    alert('LiveConnect/BigInteger test failed');
+  }
+}
+//-->
+</script>
+<a href="javascript:runtest()">Try the LiveConnect test now</a>
+<p>If the test succeeds, you will see an alert box with the message
+"LiveConnect test succeeded".
+Any other response indicates a failure.
+A successful result means that it is likely your browser will
+work with the demo as-is, or can be made to work.
+<p>
+<hr>
+<h2>Source code</h2>
+The source code for the demo itself consists of three files:
+<ul>
+<li><a href="demo.html">demo.html</a> - The main JavaScript demo implementation.
+<li><a href="sha1.js">sha1.js</a> - A pure JavaScript implementation of the SHA-1 hash algorithm.
+<li><a href="bigint.java">bigint.java</a> - The source code to the helper applet.
+</ul>
+Use the "Save Link As..." or "Save Target As..." option in your
+browser to download and save these files.
+<p>
+<hr>
+<applet mayscript name="bigint" code="bigint.class" width=1 height=1></applet>
+</body>
+</html>

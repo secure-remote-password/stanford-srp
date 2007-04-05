@@ -1,0 +1,40 @@
+Support for Windows platforms in the SRP distribution
+-----------------------------------------------------
+
+Platforms based on the "Win32" API (Windows 98, NT, 2000,
+XP, and flavors therein) can build the SRP distribution,
+or parts of it, depending on what build environment(s)
+are available.
+
+Cygwin should be able to build nearly all of the distribution
+using the standard "configure" mechanism, although the
+resulting executables will require Cygwin DLLs in order
+to run.  Also, libraries may not be usable by other
+build environments like MSVC++.
+
+MinGW/MSYS can build parts of the distribution, also using
+the standard "configure" mechanism, producing executables
+that run directly under Windows.  Libraries may or may
+not interoperate with MSVC++.
+
+NOTE: version 3.79.1 of "make" as included with some versions
+of MinGW have problems handling the Makefiles created by the
+"configure" mechanism.  Suggested workarounds including
+installing MSYS 1.0.8 or 1.0.9, which appear to ship with
+a make.exe without the bug.
+
+MSVC++ can build the libsrp library, either as a DLL or
+static library, with full interoperability with other
+MSVC++ projects and code.  This requires use of the
+Windows and MSVC-specific Makefiles and workspaces/projects
+in the "win32" subdirectory.  Your choise of crypto libraries
+is fairly limited if you go this route, since these
+workspaces/projects are individually set up for each
+supported library.  Please read "win32/README"
+for more information.
+
+Another issue to consider is how easily the crypto/math
+library builds under the desired environment.  Cygwin and
+MinGW/MSYS should be able to build most of the freeware
+crypto libraries that use a "configure"-style script,
+while MSVC++ might be more limited in this regard.

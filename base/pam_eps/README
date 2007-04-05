@@ -1,0 +1,127 @@
+README for PAM module support in EPS
+------------------------------------
+
+These PAM modules are designed for systems that support the
+"Pluggable Authentication Module" system developed at Sun.
+If your system has the file
+
+  /etc/pam.conf
+
+or the directory
+
+  /etc/pam.d
+
+then chances are you have PAM support.  If not, you probably
+don't, and you can stop reading now.
+
+PAM allows the system administrator to add, remove, or change
+authentication mechanisms for different system services simply
+by editing the configuration file and installing what are known
+as "PAM modules" - most often dynamically linked objects (*.so)
+that perform specific authentication services.
+
+The PAM version of EPS contains three things:
+
+  pam_eps_auth.so - The authentication module for EPS
+  pam_eps_passwd.so - The password-handling module for EPS
+  tconf - The EPS configuration utility
+
+Instead of having to replace the system binaries "login", "passwd",
+and "su", it is now possible to add EPS support by simply installing
+the above binaries and editing either the /etc/pam.conf file or the
+files in /etc/pam.d.
+
+
+Migrating to an EPS-based system
+--------------------------------
+
+To get started, look at /etc/pam.conf first.  It should have entries
+like:
+
+DEFAULT   auth     required       /lib/security/pam_unix_auth.so
+DEFAULT   account  required       /lib/security/pam_unix_acct.so
+DEFAULT   password required       /lib/security/pam_unix_passwd.so
+DEFAULT   session  required       /lib/security/pam_unix_session.so
+
+[NOTE:  If you have an /etc/pam.d directory, you have multiple files
+ whose entries resemble the entries from /etc/pam.conf, except that
+ they don't have the first field.  Instead, what used to be the first
+ field is now the filename.]
+
+The last field indicates where the existing modules live.  Install
+the "auth" and "password" modules in the same directory, e.g.
+/lib/security/pam_eps_auth.so and /lib/security/pam_eps_passwd.so
+in this example.
+
+Install the "tconf" binary in a suitable directory, like /sbin, /usr/sbin,
+or /bin, and run it once as root.  If you are short on time, select one
+of the pre-generated prime fields.  Otherwise, you may choose to generate
+your own random field.
+
+The first step is to get all users on the system to generate EPS password
+entries.  First, add the EPS "password" module to all system service
+entries in pam.conf.  For example, if you have a line that references
+the "pam_unix_passwd" module, like
+
+DEFAULT   password required       /lib/security/pam_unix_passwd.so
+
+then add (don't replace) it with a line that calls the "pam_eps_passwd"
+module:
+
+DEFAULT   password required       /lib/security/pam_unix_passwd.so
+DEFAULT   password required       /lib/security/pam_eps_passwd.so
+
+[For "pam.d" systems - edit /etc/pam.d/passwd instead.]
+
+Do this for each system service (ftp, telnet, passwd, login, etc.) on
+the system.  This will cause both the standard UNIX password entry
+and the EPS password entry to be updated when the "passwd" program is
+run.  The file "pam.conf.migrate" contains a sample /etc/pam.conf
+file for a system at this stage.
+
+At this point, you must get each user on the system to change his/her
+password.  This may take minutes or weeks, depending on the system and
+the users involved.  Once every active user on the system has an entry
+in /etc/tpasswd, you can move on to the next step.
+
+
+Finalizing EPS support
+----------------------
+
+As soon as all users have EPS password entries, it is possible to
+move the system to be entirely EPS-based.  First, delete all the
+references to the "pam_unix_passwd.so" module.  There will be
+one in most sections; I had to delete these lines from my pam.conf:
+
+DEFAULT password   required     /lib/security/pam_unix_passwd.so
+rlogin  password   required     /lib/security/pam_unix_passwd.so
+passwd  password   required     /lib/security/pam_unix_passwd.so
+su      password   required     /lib/security/pam_unix_passwd.so
+login   password   required     /lib/security/pam_unix_passwd.so
+chsh    password   required     /lib/security/pam_unix_passwd.so
+chfn    password   required     /lib/security/pam_unix_passwd.so
+
+Make sure that you leave the EPS "password" module in place for each
+of these services.  This will cause password changes to update
+/etc/tpasswd only.  Next change all references to the "pam_unix_auth.so"
+module to refer to "pam_eps_auth.so" instead.  For example, the line
+
+DEFAULT   auth     required       /lib/security/pam_unix_auth.so
+
+would be changed to:
+
+DEFAULT   auth     required       /lib/security/pam_eps_auth.so
+
+Do this for all (ftp, telnet, login, etc.) system services.  This change
+will cause all utilities that check passwords to check them against the
+/etc/tpasswd database instead of the old passwd/shadow database.
+
+Now you are all set.  As an optional security precaution, you should
+probably zap the old-style UNIX password entries for /etc/passwd or
+/etc/shadow.  If you have /etc/shadow, deleting the file should
+suffice.  If you used /etc/passwd to hold the hashed passwords,
+then replace the second field with some string like "x" or "EPS"
+to indicate that the password is not being handled in the conventional
+way, and also to remove the threat of some one running "crack"
+against it.  The file "pam.conf.eps" contains a sample /etc/pam.conf
+file for a system running in an EPS-only configuration.

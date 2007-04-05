@@ -1,0 +1,342 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define to the type of elements in the array set by `getgroups'.
+   Usually this is either `int' or `gid_t'.  */
+#undef GETGROUPS_T
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef gid_t
+
+/* Define if your struct stat has st_rdev.  */
+#undef HAVE_ST_RDEV
+
+/* Define if you have the strftime function.  */
+#undef HAVE_STRFTIME
+
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+#undef HAVE_SYS_WAIT_H
+
+/* Define if utime(file, NULL) sets file's timestamp to the present.  */
+#undef HAVE_UTIME_NULL
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if your <sys/time.h> declares struct tm.  */
+#undef TM_IN_SYS_TIME
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef uid_t
+
+/* Define if you do not have <strings.h>, index, bzero, etc..  */
+#undef USG
+
+/* Define to enable password aging.  */
+#undef AGING
+
+/* Define if struct passwd has pw_age.  */
+#undef ATT_AGE
+
+/* Define if struct passwd has pw_comment.  */
+#undef ATT_COMMENT
+
+/* Define if struct passwd has pw_quota.  */
+#undef BSD_QUOTA
+
+/* Define if struct shadow has extra fields. */
+#undef SP_EXTRA
+
+/* Define if struct lastlog has ll_host */
+#undef HAVE_LL_HOST
+
+/* Define if utmp.h defines struct lastlog. */
+#undef UTMP_LASTLOG
+
+/* Working shadow group support in libc?  */
+#undef HAVE_SHADOWGRP
+
+/* Path for lastlog file.  */
+#undef LASTLOG_FILE
+
+/* Path for faillog file.  */
+#undef FAILLOG_FILE
+
+/* Path for sulog file.  */
+#undef SULOG_FILE
+
+/* Location of system mail spool directory.  */
+#undef MAIL_SPOOL_DIR
+
+/* Name of user's mail spool file if stored in user's home directory.  */
+#undef MAIL_SPOOL_FILE
+
+/* Define to support the MD5-based password hashing algorithm.  */
+#undef MD5_CRYPT
+
+/* Define to support OPIE one-time password logins.  */
+#undef OPIE
+
+/* Define to support Pluggable Authentication Modules.  */
+#undef PAM
+
+/* Define to support the pam_misc library.  */
+#undef PAM_MISC
+
+/* Define to indicate old-style pam_strerror.  */
+#undef PAM_OLD
+
+/* Define if login should support the -r flag for rlogind.  */
+#undef RLOGIN
+
+/* Define to the ruserok() "success" return value (0 or 1).  */
+#undef RUSEROK
+
+/* Define to support the shadow password file.  */
+#undef SHADOWPWD
+
+/* Define to support the shadow group file.  */
+#undef SHADOWGRP
+
+/* Define to support S/Key logins.  */
+#undef SKEY
+
+/* Define to use syslog().  */
+#undef USE_SYSLOG
+
+/* Define if you have ut_host in struct utmp.  */
+#undef UT_HOST
+
+/* Path for utmp file.  */
+#undef _UTMP_FILE
+
+/* Define to ut_name if struct utmp has ut_name (not ut_user).  */
+#undef UT_USER
+
+/* Path for wtmp file.  */
+#undef _WTMP_FILE
+
+/* Defined if you have libcrypt.  */
+#undef HAVE_LIBCRYPT
+
+/* Defined if you have libcrack.  */
+#undef HAVE_LIBCRACK
+
+/* Cracklib dictionary path.  */
+#undef CRACKLIB_DICTPATH
+
+/* Colon sep. paths to search if CRACKLIB_DICTPATH or login.defs is wrong. */
+#undef DEFAULT_CRACKLIB_DICTPATH
+
+/* Defined if you have the ts&szs cracklib.  */
+#undef HAVE_LIBCRACK_HIST
+
+/* Defined if it includes *Pw functions.  */
+#undef HAVE_LIBCRACK_PW
+
+/* Path to chfn program.  */
+#undef CHFN_PROGRAM
+
+/* Path to chsh program.  */
+#undef CHSH_PROGRAM
+
+/* Path to gpasswd program.  */
+#undef GPASSWD_PROGRAM
+
+/* Path to passwd program.  */
+#undef PASSWD_PROGRAM
+
+/* Define to support /etc/login.access login access control.  */
+#undef LOGIN_ACCESS
+
+/* Define to support /etc/suauth su access control.  */
+#undef SU_ACCESS
+
+/* Define to support the "console groups" feature.  */
+#undef CONSOLE_GROUPS
+
+/* EJ added these */
+#undef NOISY_SHELL
+
+/* Define if you have a member ut_syslen in struct utmp or utmpx.  */
+#undef HAVE_UT_SYSLEN
+
+/* Define if you have the a64l function.  */
+#undef HAVE_A64L
+
+/* Define if you have the fchmod function.  */
+#undef HAVE_FCHMOD
+
+/* Define if you have the fchown function.  */
+#undef HAVE_FCHOWN
+
+/* Define if you have the fsync function.  */
+#undef HAVE_FSYNC
+
+/* Define if you have the getgroups function.  */
+#undef HAVE_GETGROUPS
+
+/* Define if you have the gethostname function.  */
+#undef HAVE_GETHOSTNAME
+
+/* Define if you have the getspnam function.  */
+#undef HAVE_GETSPNAM
+
+/* Define if you have the gettimeofday function.  */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define if you have the getusershell function.  */
+#undef HAVE_GETUSERSHELL
+
+/* Define if you have the getutent function.  */
+#undef HAVE_GETUTENT
+
+/* Define if you have the initgroups function.  */
+#undef HAVE_INITGROUPS
+
+/* Define if you have the mkdir function.  */
+#undef HAVE_MKDIR
+
+/* Define if you have the putgrent function.  */
+#undef HAVE_PUTGRENT
+
+/* Define if you have the putpwent function.  */
+#undef HAVE_PUTPWENT
+
+/* Define if you have the putspent function.  */
+#undef HAVE_PUTSPENT
+
+/* Define if you have the rename function.  */
+#undef HAVE_RENAME
+
+/* Define if you have the rmdir function.  */
+#undef HAVE_RMDIR
+
+/* Define if you have the setgroups function.  */
+#undef HAVE_SETGROUPS
+
+/* Define if you have the sgetgrent function.  */
+#undef HAVE_SGETGRENT
+
+/* Define if you have the sgetpwent function.  */
+#undef HAVE_SGETPWENT
+
+/* Define if you have the sgetspent function.  */
+#undef HAVE_SGETSPENT
+
+/* Define if you have the sigaction function.  */
+#undef HAVE_SIGACTION
+
+/* Define if you have the strdup function.  */
+#undef HAVE_STRDUP
+
+/* Define if you have the strstr function.  */
+#undef HAVE_STRSTR
+
+/* Define if you have the <dirent.h> header file.  */
+#undef HAVE_DIRENT_H
+
+/* Define if you have the <fcntl.h> header file.  */
+#undef HAVE_FCNTL_H
+
+/* Define if you have the <gshadow.h> header file.  */
+#undef HAVE_GSHADOW_H
+
+/* Define if you have the <lastlog.h> header file.  */
+#undef HAVE_LASTLOG_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <ndir.h> header file.  */
+#undef HAVE_NDIR_H
+
+/* Define if you have the <paths.h> header file.  */
+#undef HAVE_PATHS_H
+
+/* Define if you have the <sgtty.h> header file.  */
+#undef HAVE_SGTTY_H
+
+/* Define if you have the <shadow.h> header file.  */
+#undef HAVE_SHADOW_H
+
+/* Define if you have the <stdlib.h> header file.  */
+#undef HAVE_STDLIB_H
+
+/* Define if you have the <sys/dir.h> header file.  */
+#undef HAVE_SYS_DIR_H
+
+/* Define if you have the <sys/ioctl.h> header file.  */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define if you have the <sys/label.h> header file.  */
+#undef HAVE_SYS_LABEL_H
+
+/* Define if you have the <sys/ndir.h> header file.  */
+#undef HAVE_SYS_NDIR_H
+
+/* Define if you have the <sys/resource.h> header file.  */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define if you have the <sys/select.h> header file.  */
+#undef HAVE_SYS_SELECT_H
+
+/* Define if you have the <sys/time.h> header file.  */
+#undef HAVE_SYS_TIME_H
+
+/* Define if you have the <syslog.h> header file.  */
+#undef HAVE_SYSLOG_H
+
+/* Define if you have the <termio.h> header file.  */
+#undef HAVE_TERMIO_H
+
+/* Define if you have the <termios.h> header file.  */
+#undef HAVE_TERMIOS_H
+
+/* Define if you have the <ulimit.h> header file.  */
+#undef HAVE_ULIMIT_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the <usersec.h> header file.  */
+#undef HAVE_USERSEC_H
+
+/* Define if you have the <utime.h> header file.  */
+#undef HAVE_UTIME_H
+
+/* Define if you have the <utmp.h> header file.  */
+#undef HAVE_UTMP_H
+
+/* Define if you have the <utmpx.h> header file.  */
+#undef HAVE_UTMPX_H
+
+/* Define if you have the inet library (-linet).  */
+#undef HAVE_LIBINET
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+

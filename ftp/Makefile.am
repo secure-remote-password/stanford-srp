@@ -1,0 +1,3 @@
+AUTOMAKE_OPTIONS = foreign
+SUBDIRS = arpa ftp ftpd
+EXTRA_DIST = README README.gssftp

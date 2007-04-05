@@ -1,0 +1,32 @@
+README for NIS support in EPS/SRP:
+==================================
+
+On the NIS server:
+------------------
+
+Edit the Makefile (/var/yp/Makefile) to add entries for "tpasswd.time"
+and "tconf.time".
+
+Edit the ypmake script (/var/yp/ypmake) to add the tpasswd() and tconf()
+functions.
+
+
+On the NIS client:
+------------------
+
+Edit the nicknames database (/var/yp/nicknames) to add the
+mappings for "tpasswd -> tpasswd.byname" and "tconf -> tconf.byid".
+
+Add the lines:
+
+tpasswd:	files nis
+tconf:		files nis
+
+to /etc/nsswitch.conf to cause the getXXent() and related routines
+to use NIS.  The '+' and '+user' syntax is also supported in /etc/tpasswd,
+but it is being deprecated in favor of the more flexible /etc/nsswitch.conf.
+
+*** Make sure that your local client copies of /etc/tpasswd.conf agree
+    with the /etc/tpasswd.conf on your NIS server!!! ***
+    The easiest way to do this is just "ypcat tconf > /etc/tpasswd.conf"
+    on each client.

@@ -1,0 +1,18 @@
+CAST stub README
+----------------
+
+The code in this directory consists of stubs for the CAST-128 encryption
+algorithm.  I have unbundled the internal CAST implementation from the
+SRP distribution (along with all other encryption algorithms) to make
+SRP easier to distribute worldwide.
+
+If you are using OpenSSL, these stubs should interface with the OpenSSL
+library's CAST implementation.  If you use another cryptographic library
+without CAST, like GNU MP or CryptoLib, and you want to use CAST, and
+you're in the United States or Canada, contact me at <tjw@cs.stanford.edu>
+and I'll send you a copy.  Unpack 'cast.tar.gz' in the top-level SRP
+distribution directory, and it will replace the stubs in this directory
+with the real thing.
+
+Tom Wu
+tjw@cs.stanford.edu
